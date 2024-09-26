@@ -5,13 +5,13 @@
 }
 
 <h3>Hotels List</h3>
-<table class="table">
+<table class="table" id="HotelTable">
     <thead>
         <tr>
-            <th>@Html.DisplayNameFor(model => model.HotelName)</th>
-            <th>@Html.DisplayNameFor(model => model.Address)</th>
-            <th>@Html.DisplayNameFor(model => model.PhoneNo)</th>
-            <th>@Html.DisplayNameFor(model => model.HotelImage)</th>
+            <th>Hotel</th>
+            <th>Address</th>
+            <th>Phone No</th>
+            <th>Image</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -36,3 +36,17 @@
         }
     </tbody>
 </table>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#HotelTable').DataTable({
+                "pageLength": 5,
+                "lengthMenu": [5, 10, 25, 50],
+                "columnDefs": [
+                    { "orderable": false, "targets": [-2, -1] }
+                ],
+                "dom": '<"top"f>rt<"bottom"lp><"clear">'
+            });
+        });
+    </script>
+}

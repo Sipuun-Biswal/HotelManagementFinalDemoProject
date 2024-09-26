@@ -20,31 +20,57 @@ namespace HotelManagementFinalDemoApi.Controllers
         public async Task<ActionResult<IEnumerable<BookingDto>>> GetAllBookings()
         {
 
-            var bookings = await _context.Bookings
-                .Include(b => b.User)
+            var today = DateTime.Now.Date;
+
+           
+            var pastBookings = await _context.Bookings
                 .Include(b => b.Room)
-                .ThenInclude(b=>b.Hotel)
+                .Where(b => b.CheckOutDate < today) 
                 .ToListAsync();
 
-            var bookingDtos = bookings.Select(b => BookingDto.FromEntity(b)).ToList();
-            return Ok(bookingDtos);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<BookingDto>> GetBooking(Guid id)
-        {
-
-            var booking = await _context.Bookings
-                .Include(b => b.User)
-                .Include(b => b.Room)
-                .FirstOrDefaultAsync(b => b.Id == id);
-
-            if (booking == null)
+            foreach (var booking in pastBookings)
             {
-                return NotFound();
+                var room = booking.Room;
+                room.IsAvailable = true; 
+                _context.Entry(room).State = EntityState.Modified;
+                _context.Bookings.Remove(booking); 
+            }
+            await _context.SaveChangesAsync();
+            var bookingsForToday = await _context.Bookings
+                .Include(b => b.Room)
+                .Where(b => b.CheckInDate <= today && b.CheckOutDate > today) 
+                .ToListAsync();
+
+            foreach (var booking in bookingsForToday)
+            {
+                var room = booking.Room;
+                room.IsAvailable = false; 
+                _context.Entry(room).State = EntityState.Modified;
             }
 
-            return BookingDto.FromEntity(booking);
+            var availableRooms = await _context.Rooms
+                .Where(r => !_context.Bookings.Any(b => b.RoomId == r.Id
+                        && b.CheckInDate <= today
+                        && b.CheckOutDate > today))  
+                .ToListAsync();
+
+            foreach (var room in availableRooms)
+            {
+                room.IsAvailable = true;  
+                _context.Entry(room).State = EntityState.Modified;
+            }
+
+            await _context.SaveChangesAsync();
+
+            var currentBookings = await _context.Bookings
+                .Include(b => b.User)
+                .Include(b => b.Room)
+                .ThenInclude(b => b.Hotel)
+                .ToListAsync();
+
+            var bookingDtos = currentBookings.Select(b => BookingDto.FromEntity(b)).ToList();
+
+            return Ok(bookingDtos);
         }
 
         [HttpPost("createBooking")]
@@ -63,7 +89,11 @@ namespace HotelManagementFinalDemoApi.Controllers
             {
                 return BadRequest("The room is already booked for the selected dates.");
             }
-
+            var room = await _context.Rooms.FindAsync(bookingDto.RoomId);
+            if (room == null || !room.IsAvailable)
+            {
+                return BadRequest("The room is not available.");
+            }
             var booking = BookingDto.ToEntity(bookingDto);
             booking.Id = Guid.NewGuid();
             booking.CreatedDate = DateTime.Now;

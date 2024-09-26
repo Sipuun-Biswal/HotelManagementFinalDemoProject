@@ -82,19 +82,18 @@ namespace HotelManagementFinalDemoApi.Models.DataModels
                 .HasOne(f => f.Booking)
                 .WithMany(u => u.Feedbacks)
                 .HasForeignKey(f => f.BookingId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-           
-            ////Otp
-
-            //modelBuilder.Entity<Otp>()
-            //    .HasOne(o => o.User)
-            //    .WithMany(u => u.Otps)
-            //    .HasForeignKey(o => o.UserId)
-            //    .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade);
 
 
+            //Booking
+            modelBuilder.Entity<Booking>()
+                    .HasOne(r => r.Room)
+                    .WithMany(h => h.Bookings)
+                    .HasForeignKey(r => r.RoomId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
+
+          
 
         }
     }

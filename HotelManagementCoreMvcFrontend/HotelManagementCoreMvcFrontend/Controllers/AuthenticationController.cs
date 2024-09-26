@@ -84,6 +84,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
+                    TempData["Registration"] = "Registarion Succesful Please Login";
                     TempData["Email"] = model.Email;
                     return RedirectToAction("VerifyOtp");
                 }

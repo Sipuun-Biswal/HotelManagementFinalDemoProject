@@ -47,7 +47,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Create( Room room)
-        {
+         {
             if (ModelState.IsValid)
             {
                     var jsonContent = new StringContent(JsonConvert.SerializeObject(room), Encoding.UTF8, "application/json");

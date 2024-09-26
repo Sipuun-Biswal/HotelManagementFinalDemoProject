@@ -39,7 +39,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
-
+                    TempData["SubmitFeedback"] = "Feedback Submited Succesfully";
                     return RedirectToAction("Dashboard","Home");
                 }
                 else

@@ -13,9 +13,11 @@ namespace HotelManagementFinalDemoApi.Controllers
     {
 
         private readonly ApplicationDbContext _context;
-        public FeedbackController(ApplicationDbContext context)
+        private readonly ILogger<FeedbackController> _logger;
+        public FeedbackController(ApplicationDbContext context, ILogger<FeedbackController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [HttpGet("GetAll")]
@@ -32,9 +34,6 @@ namespace HotelManagementFinalDemoApi.Controllers
                 var feedbackDtos = feedbacks.Select(f => FeedbackDto.FromEntity(f)).ToList();
                 return Ok(feedbackDtos);
             }
-
-           
-        
 
 
         [HttpGet("{id}/GetByid")]
@@ -61,17 +60,20 @@ namespace HotelManagementFinalDemoApi.Controllers
         [HttpPost("SubmitFeedback")]
         public async Task<ActionResult<FeedbackDto>> PostFeedback(FeedbackDto feedbackDto)
         {
-            
+            try
+            {
                 var feedback = FeedbackDto.ToEntity(feedbackDto);
                 feedback.Id = Guid.NewGuid();
-
                 _context.Feedbacks.Add(feedback);
-                await _context.SaveChangesAsync();
+                 _context.SaveChanges();
 
                 return CreatedAtAction("GetFeedback", new { id = feedback.Id }, FeedbackDto.FromEntity(feedback));
-            
-           
-        }
+            }
+            catch (Exception ex) { 
+                _logger.LogError(ex,$"Error occured while submit the Feedback from controller{nameof(PostFeedback)}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Error");
+             }
+}
 
         [HttpPut("{id}/Update")]
         public async Task<IActionResult> PutFeedback(Guid id, FeedbackDto feedbackDto)

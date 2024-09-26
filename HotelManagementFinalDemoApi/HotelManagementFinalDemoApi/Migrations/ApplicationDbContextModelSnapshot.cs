@@ -364,7 +364,7 @@ namespace HotelManagementFinalDemoApi.Migrations
                     b.HasOne("HotelManagementFinalDemoApi.Models.DataModels.Booking", "Booking")
                         .WithMany("Feedbacks")
                         .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("HotelManagementFinalDemoApi.Models.DataModels.Hotel", null)

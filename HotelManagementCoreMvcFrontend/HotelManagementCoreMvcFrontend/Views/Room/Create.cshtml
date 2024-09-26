@@ -35,8 +35,7 @@
                 </div>
 
                 <div class="form-group form-check mb-3">
-                    <input class="form-check-input" asp-for="IsAvailable" />
-                    <label class="form-check-label" asp-for="IsAvailable">@Html.DisplayNameFor(model => model.IsAvailable)</label>
+                    <input  asp-for="IsAvailable" hidden/>
                 </div>
 
                 <div class="text-center">
@@ -49,6 +48,7 @@
 </div>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {

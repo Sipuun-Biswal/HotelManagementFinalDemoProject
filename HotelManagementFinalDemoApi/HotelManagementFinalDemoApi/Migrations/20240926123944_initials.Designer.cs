@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelManagementFinalDemoApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240925134451_initials")]
+    [Migration("20240926123944_initials")]
     partial class initials
     {
         /// <inheritdoc />
@@ -367,7 +367,7 @@ namespace HotelManagementFinalDemoApi.Migrations
                     b.HasOne("HotelManagementFinalDemoApi.Models.DataModels.Booking", "Booking")
                         .WithMany("Feedbacks")
                         .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("HotelManagementFinalDemoApi.Models.DataModels.Hotel", null)

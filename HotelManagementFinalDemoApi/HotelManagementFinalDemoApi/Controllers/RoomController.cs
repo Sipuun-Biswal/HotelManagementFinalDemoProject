@@ -52,7 +52,8 @@ namespace HotelManagementFinalDemoApi.Controllers
                 return BadRequest("A room with the same number already exists in this hotel.");
             }
             var room = RoomDto.ToEntity(roomDto);
-            room.Id = Guid.NewGuid(); 
+            room.Id = Guid.NewGuid();
+            room.IsAvailable=true;
             _context.Rooms.Add(room);
             await _context.SaveChangesAsync();
 

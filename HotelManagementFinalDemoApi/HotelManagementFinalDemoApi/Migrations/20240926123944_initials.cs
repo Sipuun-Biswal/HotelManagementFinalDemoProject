@@ -233,7 +233,7 @@ namespace HotelManagementFinalDemoApi.Migrations
                         column: x => x.BookingId,
                         principalTable: "Bookings",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Feedbacks_Hotels_HotelId",
                         column: x => x.HotelId,

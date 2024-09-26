@@ -13,9 +13,30 @@
                 <input asp-for="Id" hidden />
             </div>
             <div class="form-group mb-3">
-                <label asp-for="HotelName" class="form-label">Hotel Name<span class="text-danger">*</span></label>
+                <label asp-for="HotelName" class="form-label"> Name<span class="text-danger">*</span></label>
                 <input asp-for="HotelName" class="form-control" placeholder="Enter hotel name" />
                 <span asp-validation-for="HotelName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="CountryId" class="form-label">Country<span class="text-danger">*</span></label>
+                <select asp-for="CountryId" class="form-select" id="CountryId">
+                    <option value="">Select Country</option>
+                </select>
+                <span asp-validation-for="CountryId" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="StateId" class="form-label">state<span class="text-danger">*</span></label>
+                <select asp-for="StateId" class="form-select" id="StateId">
+                    <option value="">Select State</option>
+                </select>
+                <span asp-validation-for="StateId" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="CityId" class="form-label">City<span class="text-danger">*</span></label>
+                <select asp-for="CityId" class="form-select" id="CityId">
+                    <option value="">Select City</option>
+                </select>
+                <span asp-validation-for="CityId" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="Address" class="form-label">Address<span class="text-danger">*</span></label>
@@ -26,15 +47,6 @@
                 <label asp-for="PhoneNo" class="form-label">Phone No<span class="text-danger">*</span></label>
                 <input asp-for="PhoneNo" class="form-control" placeholder="Enter phone number" />
                 <span asp-validation-for="PhoneNo" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <input asp-for="CountryId" hidden />
-            </div>
-            <div class="form-group mb-3">
-               <input asp-for="StateId" hidden />
-            </div>
-            <div class="form-group mb-3">
-                <input asp-for="CityId" hidden />
             </div>
             <div class="form-group mb-3">
                 <input asp-for="UserId" hidden />
@@ -55,4 +67,59 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var selectedCountryId = '@ViewBag.SelectedCountryId';
+            var selectedStateId = '@ViewBag.SelectedStateId';
+            var selectedCityId = '@ViewBag.SelectedCityId';
+
+            // Fetch countries from Hotel API
+            $.getJSON('@Url.Action("GetCountry", "Location")', function (countries) {
+                $.each(countries, function (index, country) {
+                    $('#CountryId').append('<option value="' + country.id + '">' + country.name + '</option>');
+                });
+                if (selectedCountryId) {
+                    $('#CountryId').val(selectedCountryId).trigger('change');
+                }
+            });
+
+            // Fetch states when a country is selected
+            $('#CountryId').change(function () {
+                var countryId = $(this).val();
+                $('#StateId').empty();
+                $('#CityId').empty();
+                if (countryId) {
+                    $.getJSON('@Url.Action("GetStatesByCountry", "Location")', { countryId: countryId }, function (states) {
+                        $('#StateId').append('<option value="">Select State</option>');
+                        $('#CityId').append('<option value="">Select City</option>');
+                        $.each(states, function (index, state) {
+                            $('#StateId').append('<option value="' + state.id + '">' + state.name + '</option>');
+                        });
+                        if (selectedStateId) {
+                            $('#StateId').val(selectedStateId).trigger('change');
+                        }
+                    });
+                }
+            });
+
+            // Fetch cities when a state is selected
+            $('#StateId').change(function () {
+                var stateId = $(this).val();
+                $('#CityId').empty();
+                if (stateId) {
+                    $.getJSON('@Url.Action("GetCitiesByState", "Location")', { stateId: stateId }, function (cities) {
+                        $('#CityId').append('<option value="">Select City</option>');
+                        $.each(cities, function (index, city) {
+                            $('#CityId').append('<option value="' + city.id + '">' + city.name + '</option>');
+                        });
+                        if (selectedCityId) {
+                            $('#CityId').val(selectedCityId);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
 }

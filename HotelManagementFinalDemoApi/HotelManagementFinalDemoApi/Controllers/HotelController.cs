@@ -64,7 +64,7 @@ namespace HotelManagementFinalDemoApi.Controllers
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateHotel(Guid id, [FromBody] HotelDto hotelDto)
-        {
+    {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

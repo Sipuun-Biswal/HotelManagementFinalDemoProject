@@ -94,6 +94,9 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             if (response.IsSuccessStatusCode)
             {
                 var hotel = await response.Content.ReadFromJsonAsync<Hotel>();
+                ViewBag.SelectedCountryId = hotel.CountryId;
+                ViewBag.SelectedStateId = hotel.StateId;
+                ViewBag.SelectedCityId = hotel.CityId;
                 return View(hotel);
             }
 
