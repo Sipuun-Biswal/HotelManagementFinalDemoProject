@@ -1,0 +1,54 @@
+﻿@{
+    Layout=null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <style>
+        /* Set up the body and background image */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-page {
+            background-image: url('https://static.vecteezy.com/system/resources/previews/023/642/064/non_2x/booking-hotel-online-tiny-people-search-choose-and-reservation-hotel-or-apartment-on-web-site-tourist-and-business-trip-modern-flat-cartoon-style-illustration-on-white-background-vector.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-button {
+            padding: 15px 30px; 
+            font-size: 18px; 
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+            .login-button:hover {
+                background-color: #0056b3;
+            }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <a asp-controller="Authentication" asp-action="Login" class="login-button">
+            Login
+        </a>
+    </div>
+</body>
+</html>
+

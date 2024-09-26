@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    @inject IHttpContextAccessor HttpContextAccessor;
+    var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
+    var loginSuccessMessage = TempData["LoginSuccess"] as string;
+    var succesPasword = TempData["PasswordMessage"] as string;
+}
+@if (!string.IsNullOrEmpty(loginSuccessMessage))
+{
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div class="toast align-items-center text-bg-success border-0" id="loginToast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    @loginSuccessMessage
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
+@if (!string.IsNullOrEmpty(succesPasword))
+{
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div class="toast align-items-center text-bg-success border-0" id="loginToast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    @succesPasword
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
+<div class="content" id="content">
+    @if (role == "Admin")
+    {
+        <h3 class="mb-4">Welcome to the Admin Dashboard</h3>
+    }
+    else if (role == "Manager")
+    {
+        <h3 class="mb-4">Welcome to the Manager Dashboard</h3>
+    }
+    else if (role == "User")
+    {
+        <h3 class="mb-4">Welcome to the User Dashboard</h3>
+    }
+</div>
+
+<script>
+    window.onload = function () {
+        var toastEl = document.getElementById('loginToast');
+        if (toastEl) {
+            var toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
+    };
+</script>

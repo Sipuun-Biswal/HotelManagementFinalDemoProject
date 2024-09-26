@@ -1,0 +1,38 @@
+﻿@model IEnumerable<HotelManagementCoreMvcFrontend.Models.Hotel>
+
+@{
+    ViewData["Title"] = "Hotel List";
+}
+
+<h3>Hotels List</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.HotelName)</th>
+            <th>@Html.DisplayNameFor(model => model.Address)</th>
+            <th>@Html.DisplayNameFor(model => model.PhoneNo)</th>
+            <th>@Html.DisplayNameFor(model => model.HotelImage)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.HotelName)</td>
+                <td>@Html.DisplayFor(modelItem => item.Address)</td>
+                <td>@Html.DisplayFor(modelItem => item.PhoneNo)</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(item.HotelImage))
+                    {
+                        <img src="@Url.Content($"~{item.HotelImage}")" class="img-thumbnail" width="80" />
+                    }
+                </td>
+                <td>
+                  
+                    @Html.ActionLink("View Rooms", "GetRoomsByHotel", "Room", new { hotelId = item.Id }, new { @class = "btn btn-primary" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

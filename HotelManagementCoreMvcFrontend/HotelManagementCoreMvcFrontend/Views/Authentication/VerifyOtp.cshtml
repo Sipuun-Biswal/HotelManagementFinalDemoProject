@@ -1,0 +1,46 @@
+﻿@model HotelManagementCoreMvcFrontend.ViewModels.OtpViewModel
+
+@{
+    ViewData["Title"] = "Verify Otp";
+}
+
+<h3 class="text-center">Otp Verification</h3>
+
+<!-- Add the message at the top in red -->
+<p class="text-center text-danger" style="font-size: 1.2rem;">
+    A verification code has been sent to your email. Please enter the code below to verify.
+</p>
+
+<hr />
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form asp-action="VerifyOtp" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group mb-3">
+                        <label asp-for="Code" class="control-label"></label>
+                        <input asp-for="Code" class="form-control" />
+                        <span asp-validation-for="Code" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label>Email</label>
+                        <input type="email" class="form-control" asp-for="Email" value="@ViewBag.Email" readonly />
+                    </div>
+                    <div class="form-group text-center">
+                        <input type="submit" value="Verify" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

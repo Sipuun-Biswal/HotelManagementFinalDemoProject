@@ -1,0 +1,58 @@
+﻿@model HotelManagementCoreMvcFrontend.Models.Hotel
+
+@{
+    ViewData["Title"] = "Edit Hotel";
+}
+<h4>Edit Hotel</h4>
+<hr />
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data" class="p-4 border rounded shadow-sm">
+            <h5 class="text-center mb-4">Hotel Details</h5>
+            <div class="form-group mb-3">
+                <input asp-for="Id" hidden />
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="HotelName" class="form-label">Hotel Name<span class="text-danger">*</span></label>
+                <input asp-for="HotelName" class="form-control" placeholder="Enter hotel name" />
+                <span asp-validation-for="HotelName" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Address" class="form-label">Address<span class="text-danger">*</span></label>
+                <input asp-for="Address" class="form-control" placeholder="Enter hotel address" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="PhoneNo" class="form-label">Phone No<span class="text-danger">*</span></label>
+                <input asp-for="PhoneNo" class="form-control" placeholder="Enter phone number" />
+                <span asp-validation-for="PhoneNo" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <input asp-for="CountryId" hidden />
+            </div>
+            <div class="form-group mb-3">
+               <input asp-for="StateId" hidden />
+            </div>
+            <div class="form-group mb-3">
+                <input asp-for="CityId" hidden />
+            </div>
+            <div class="form-group mb-3">
+                <input asp-for="UserId" hidden />
+            </div>
+            <div class="form-group mb-3">
+                <label class="form-label">Hotel Image</label>
+                <input name="image" class="form-control" type="file" />
+            </div>
+            <div class="text-center">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

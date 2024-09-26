@@ -1,0 +1,48 @@
+﻿@model HotelManagementCoreMvcFrontend.Models.Booking
+
+@{
+    ViewData["Title"] = "Edit Booking";
+}
+
+<h1 class="text-center">Edit Booking</h1>
+
+<hr />
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form asp-action="Edit" class="bg-light p-4 border rounded">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <input asp-for="Id" hidden />
+                <input asp-for="UserId" hidden />
+                <input asp-for="RoomId" hidden />
+                <input asp-for="CreatedBy" hidden />
+                <input asp-for="CreatedDate" hidden />
+
+                <div class="form-group mb-3">
+                    <label asp-for="CheckInDate" class="form-label">Check-In Date<span class="text-danger">*</span></label>
+                    <input asp-for="CheckInDate" class="form-control" />
+                    <span asp-validation-for="CheckInDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="CheckOutDate" class="form-label">Check-Out Date<span class="text-danger">*</span></label>
+                    <input asp-for="CheckOutDate" class="form-control" />
+                    <span asp-validation-for="CheckOutDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Status" class="form-label">Status</label>
+                    <input asp-for="Status" class="form-control" />
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+
+                <div class="text-center">
+                    <input type="submit" value="Save Changes" class="btn btn-primary me-2" />
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

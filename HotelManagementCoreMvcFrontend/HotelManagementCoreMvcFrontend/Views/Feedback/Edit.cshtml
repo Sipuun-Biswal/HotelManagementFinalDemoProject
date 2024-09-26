@@ -1,0 +1,51 @@
+﻿@model HotelManagementCoreMvcFrontend.Models.Feedback
+
+@{
+    ViewData["Title"] = "Edit Feedback";
+}
+
+<h1 class="text-center">Edit Feedback</h1>
+
+<hr />
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form asp-action="Edit" class="bg-light p-4 border rounded">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <input asp-for="Id" hidden />
+                <input asp-for="BookingId" hidden />
+
+                <div class="form-group mb-3">
+                    <label asp-for="HotelName" class="form-label">Hotel Name</label>
+                    <input asp-for="HotelName" class="form-control" readonly />
+                    <span asp-validation-for="HotelName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="RoomNo" class="form-label">Room No</label>
+                    <input asp-for="RoomNo" class="form-control" readonly />
+                    <span asp-validation-for="RoomNo" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="FeedbackText" class="form-label">Feedback</label>
+                    <textarea asp-for="FeedbackText" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="FeedbackText" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Rating" class="form-label">Rating</label>
+                    <input asp-for="Rating" class="form-control" />
+                    <span asp-validation-for="Rating" class="text-danger"></span>
+                </div>
+
+                <div class="text-center">
+                    <input type="submit" value="Save Changes" class="btn btn-primary me-2" />
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

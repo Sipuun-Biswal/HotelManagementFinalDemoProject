@@ -1,0 +1,125 @@
+<h1 class="text-center text-primary">Registration</h1>
+
+<h4 class="text-secondary">Credentials</h4>
+<hr />
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Registration" class="p-4 border rounded bg-light">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            
+            <div class="form-group">
+                <label asp-for="Names" class="control-label"></label>
+                <input asp-for="Names" class="form-control" />
+                <span asp-validation-for="Names" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Age" class="control-label"></label>
+                <input asp-for="Age" class="form-control" />
+                <span asp-validation-for="Age" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Passwords" class="control-label"></label>
+                <input asp-for="Passwords" class="form-control" type="password" />
+                <span asp-validation-for="Passwords" class="text-danger"></span>
+            </div>
+            <div class="form-group text-center">
+                <input type="submit" value="Create" class="btn btn-primary btn-lg" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="text-center mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</div>
+
+<style>
+    h1 {
+        font-family: 'Arial', sans-serif;
+        margin-bottom: 20px;
+    }
+    .form-group label {
+        font-weight: bold;
+    }
+    .form-control {
+        border-radius: 0.25rem;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+    .border {
+        border: 1px solid #dee2e6;
+    }
+    .bg-light {
+        background-color: #f8f9fa;
+    }
+    .rounded {
+        border-radius: 0.25rem;
+    }
+</style>
+
+
+
+
+
+
+Good Evening
+Eod(26/07/2024)
+Today i had leaned and practiced :
+1)How to use session in a project with data base.
+2)Made a project of Registration page and  login page and Dashboard page.
+and i had faced some issue while i had make the project .Faced  a issue on primary key when i was entering a value to my registration from the primary key automaticaly takes the id as by default zero and its through an eror of duplicate value 
+
+
+
+
+
+h1>Registeration</h1>
+
+<h4>Credentialss</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Registeration">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-group">
+                <label asp-for="Names" class="control-label"></label>
+                <input asp-for="Names" class="form-control" />
+                <span asp-validation-for="Names" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Age" class="control-label"></label>
+                <input asp-for="Age" class="form-control" />
+                <span asp-validation-for="Age" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Passwords" class="control-label"></label>
+                <input asp-for="Passwords" class="form-control" />
+                <span asp-validation-for="Passwords" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

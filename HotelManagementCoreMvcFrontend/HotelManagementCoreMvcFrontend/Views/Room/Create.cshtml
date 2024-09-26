@@ -1,0 +1,78 @@
+﻿@model HotelManagementCoreMvcFrontend.Models.Room
+
+@{
+    ViewData["Title"] = "Create Room";
+}
+
+<h1 class="text-center">Add Room</h1>
+
+<hr />
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form asp-action="Create" method="post" class="bg-light p-4 border rounded">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="HotelId" class="form-label">Select Hotel<span class="text-danger">*</span></label>
+                    <select id="hotelDropdown" asp-for="HotelId" class="form-select">
+                        <option value="">-- Select Hotel --</option>
+                    </select>
+                    <span asp-validation-for="HotelId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="RoomNo" class="form-label">Room Number<span class="text-danger">*</span></label>
+                    <input asp-for="RoomNo" class="form-control" placeholder="Enter Room Number" />
+                    <span asp-validation-for="RoomNo" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Price" class="form-label">Price<span class="text-danger">*</span></label>
+                    <input asp-for="Price" class="form-control" placeholder="Enter Price" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+
+                <div class="form-group form-check mb-3">
+                    <input class="form-check-input" asp-for="IsAvailable" />
+                    <label class="form-check-label" asp-for="IsAvailable">@Html.DisplayNameFor(model => model.IsAvailable)</label>
+                </div>
+
+                <div class="text-center">
+                    <input type="submit" value="Create Room" class="btn btn-primary me-2" />
+                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Call the API to fetch hotel data
+            $.ajax({
+                url: '@Url.Action("GetHotel", "Room")',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    var hotelDropdown = $('#hotelDropdown');
+                    hotelDropdown.empty();
+                    hotelDropdown.append('<option value="">-- Select Hotel --</option>');
+
+                    $.each(data, function (index, hotel) {
+                        hotelDropdown.append($('<option>', {
+                            value: hotel.id,
+                            text: hotel.hotelName
+                        }));
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.log('Error fetching hotels:', error);
+                }
+            });
+        });
+    </script>
+}
