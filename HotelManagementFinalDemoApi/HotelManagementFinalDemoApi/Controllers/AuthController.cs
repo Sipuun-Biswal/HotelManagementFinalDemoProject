@@ -155,6 +155,17 @@ namespace HotelManagementFinalDemoApi.Controllers
 
             return Ok("Password changed successfully.");
         }
+        //Remote Validation Check For Email.
+        [HttpGet("EmailCheck")]
+        public async Task<bool> IsEmailAvailable(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+              return false;
+            }
+            var emailExists = await _context.Users.AnyAsync(u => u.Email == email);
+            return emailExists;
+        }
 
     }
 }

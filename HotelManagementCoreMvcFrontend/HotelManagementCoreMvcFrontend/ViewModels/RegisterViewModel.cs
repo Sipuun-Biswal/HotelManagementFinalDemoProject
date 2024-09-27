@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using HotelManagementCoreMvcFrontend.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HotelManagementCoreMvcFrontend.ViewModels
 {
@@ -18,7 +19,7 @@ namespace HotelManagementCoreMvcFrontend.ViewModels
 
         [Required(ErrorMessage = "Email is required")]
         [RegularExpression(@"^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$", ErrorMessage = "Invalid email format")]
-        [EmailAddress(ErrorMessage = "Invalid Email Address")]
+        [Remote(action: "IsEmailAvailable", controller: "Authentication", ErrorMessage = "This mail already exist ")]
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
@@ -31,6 +32,8 @@ namespace HotelManagementCoreMvcFrontend.ViewModels
         [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string ConfirmPassword { get; set; }
         public IFormFile? ProfileImage { get; set; }
+        public Role Role { get; set; }
     }
-    }
+ 
+}
 

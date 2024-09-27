@@ -19,9 +19,9 @@ namespace HotelManagementFinalDemoApi
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnections")));
 
-            builder.Logging.ClearProviders();
-            builder.Logging.AddConsole();
-            builder.Services.AddSingleton<ILoggerProvider, DatabaseLoggerProvider>();
+            //builder.Logging.ClearProviders();
+            //builder.Logging.AddConsole();
+            //builder.Services.AddSingleton<ILoggerProvider, DatabaseLoggerProvider>();
             // Register the custom logger provider
             // Add services to the container.
             builder.Services.AddScoped<EmailService>();

@@ -16,6 +16,7 @@ namespace HotelManagementCoreMvcFrontend.Models
         public int CityId { get; set; }
         public Guid? UserId { get; set; }
         [Required(ErrorMessage ="Address Field is required")]
+        public Guid? CreatedBy { get; set; }
         public string? Address { get; set; }
         [Required(ErrorMessage ="Phone number is required")]
         public string? PhoneNo { get; set; }

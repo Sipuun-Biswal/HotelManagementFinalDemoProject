@@ -90,9 +90,9 @@ namespace HotelManagementCoreMvcFrontend.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Registration failed. Please try again.");
+                    ModelState.AddModelError("", "Email is already exist.");
                 }
-                ModelState.Clear();
+               
             }
           
             return View(model);
@@ -248,6 +248,31 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             }
             
             return View(model);
+        }
+        [AcceptVerbs("Get", "Post")]
+        public async Task<IActionResult> IsEmailAvailable(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return Json("Email is required.");
+            }
+            var url = $"{_baseUrl}Auth/EmailCheck?email={email}";
+            var response = await _httpClient.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                bool emailExists = bool.TryParse(content, out bool exists) && exists;
+                if (emailExists)
+                {
+                    return Json($" This email is already associated with an account.");
+                }
+            }
+            else
+            {
+                return Json("Error checking email availability.");
+            }
+
+            return Json(true);
         }
     }
 }

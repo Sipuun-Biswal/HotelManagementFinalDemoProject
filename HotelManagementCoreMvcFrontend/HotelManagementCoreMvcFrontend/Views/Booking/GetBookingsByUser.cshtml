@@ -31,12 +31,13 @@ else
                     <td>@booking.RoomNo</td>
                     <td>@booking.HotelName</td>
                     <td>
-                    @Html.ActionLink("Give Feedback", "SubmitFeedback", "Feedback", new { id = booking.Id }, new { @class = "btn btn-warning btn-sm" })</td>
-                     <td>
-                    <form asp-action="Delete" asp-route-id="@booking.Id" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to cancel this booking of room no @booking.RoomNo?');">
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    @Html.ActionLink("Give Feedback", "SubmitFeedback", "Feedback", new { id = booking.Id }, new { @class = "btn btn-warning btn-sm" })
+                        <form asp-action="Delete" asp-route-id="@booking.Id" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to cancel this booking of room no @booking.RoomNo?');">
+                            <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
                         </form>
-                    </td>
+                     <td>
+                    
+                    
               </tr>
             }
         </tbody>

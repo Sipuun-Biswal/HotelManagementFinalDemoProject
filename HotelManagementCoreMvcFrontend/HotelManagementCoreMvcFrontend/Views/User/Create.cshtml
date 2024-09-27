@@ -4,20 +4,6 @@
     ViewData["Title"] = "Create";
 }
 
-@{
-    Layout = "_Layout";
-}
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Registration</title>
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         body {
@@ -42,8 +28,7 @@
             padding: 10px;
         }
     </style>
-</head>
-<body>
+
 
     <section class="registration-section">
         <div class="container">
@@ -90,6 +75,15 @@
                                 <input asp-for="ProfileImage" class="form-control" type="file" />
                                 <span asp-validation-for="ProfileImage" class="text-danger"></span>
                             </div>
+                        <div class="mb-3">
+                            <label asp-for="Role" class="form-label">Select Role</label>
+                            <select asp-for="Role" class="form-select">
+                                <option value="">-- Select Role --</option>
+                                <option value="User">User</option>
+                                <option value="Manager">Manager</option>
+                            </select>
+                            <span asp-validation-for="Role" class="text-danger"></span>
+                        </div>
 
                             <button type="submit" class="btn btn-success btn-submit">Submit</button>
 
@@ -99,9 +93,8 @@
             </div>
         </div>
     </section>
+@section Scripts{
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/js/bootstrap.bundle.min.js"></script>
-
-</body>
-</html>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+} 

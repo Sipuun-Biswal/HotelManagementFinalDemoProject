@@ -32,6 +32,7 @@ namespace HotelManagementFinalDemoApi.Helpers
             {
                 var logEntry = new ErrorLog
                 {
+                    Id = Guid.NewGuid(),
                     Timestamp = DateTime.Now,
                     Message = message,
                     Exception = exception?.ToString(),

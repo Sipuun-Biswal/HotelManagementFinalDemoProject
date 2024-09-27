@@ -22,6 +22,7 @@ namespace HotelManagementFinalDemoApi.Models.DataModels
         [ForeignKey("City")]
        
         public int CityId { get; set; }
+        public Guid? CreatedBy { get; set; }
 
         [ForeignKey("User")]
        

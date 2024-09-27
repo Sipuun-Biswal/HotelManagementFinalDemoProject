@@ -20,16 +20,16 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             _httpClient = httpClient;
         }
 
-     
+
         public async Task<IActionResult> Index()
         {
             var response = await _httpClient.GetAsync($"{_baseUrl}User/GetAll");
             if (response.IsSuccessStatusCode)
             {
                 var users = await response.Content.ReadFromJsonAsync<List<User>>();
-                return View(users); 
+                return View(users);
             }
-            return View(new List<User>());  
+            return View(new List<User>());
         }
 
         [HttpGet]
@@ -75,7 +75,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
                     LastName = model.LastName,
                     Email = model.Email,
                     Password = model.Password,
-                    Role = Role.User,
+                    Role = model.Role,
                     ProfileImage = profileImagePath
                 };
 
@@ -87,12 +87,12 @@ namespace HotelManagementCoreMvcFrontend.Controllers
                 {
                     TempData["Email"] = model.Email;
                     return RedirectToAction("VerifyOtp", "Authentication");
-                    
+
                 }
 
                 ModelState.AddModelError("", "Error creating user. Please try again.");
             }
-            return View(model); 
+            return View(model);
         }
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
@@ -112,7 +112,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(IFormFile? image, User user)
         {
-           
+
 
             if (ModelState.IsValid)
             {
@@ -121,7 +121,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
                 {
                     var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images");
-                   
+
 
                     var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(image.FileName);
                     var filePath = Path.Combine(uploadsFolder, uniqueFileName);
@@ -140,10 +140,10 @@ namespace HotelManagementCoreMvcFrontend.Controllers
                 var jsonData = JsonSerializer.Serialize(user);
                 var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PutAsync($"{_baseUrl}User/{user.Id}",content);
+                var response = await _httpClient.PutAsync($"{_baseUrl}User/{user.Id}", content);
                 if (response.IsSuccessStatusCode)
                 {
-                    return RedirectToAction("Dashboard","Home");
+                    return RedirectToAction("Dashboard", "Home");
                 }
 
                 ModelState.AddModelError("", "Error updating user.");
@@ -155,13 +155,19 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         public async Task<IActionResult> Delete(User user)
         {
             var response = await _httpClient.DeleteAsync($"{_baseUrl}User/{user.Id}");
-            if (response.IsSuccessStatusCode) {
+            if (response.IsSuccessStatusCode)
+            {
                 return RedirectToAction(nameof(Index));
-                                         }
+            }
             ModelState.AddModelError("", "Error deleting user.");
-            return RedirectToAction(nameof(Delete), new {user. Id });
+            return RedirectToAction(nameof(Delete), new { user.Id });
         }
-        
-   
+        public async Task<IActionResult> GetAllGarageOwner()
+        {
+          
+            var response = await _httpClient.GetAsync($"{_baseUrl}User/GetAllManagers");
+             var users = await response.Content.ReadFromJsonAsync<List<User>>();
+            return Json(users);
+        }
     }
 }

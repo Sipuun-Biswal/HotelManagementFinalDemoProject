@@ -2,95 +2,123 @@
 
 @{
     ViewData["Title"] = "Register";
-}
-
-@{
     Layout = null;
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Registration</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet">
+<!-- MDBootstrap CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.0/mdb.min.css" rel="stylesheet">
+<style>
+    /* Ensure the body and html take full height */
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet">
-    <!-- MDBootstrap CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.0/mdb.min.css" rel="stylesheet">
-    <style>
-        .form-group input[type="file"] {
-            display: block;
-            width: 100%; 
-            margin-top: 0.5rem; 
-        }</style>
+    /* Full background color for the section */
+    section.h-100 {
+        background-color: #8fc4b7; /* Full page background */
+        min-height: 150vh; /* Ensure it covers the full height of the viewport */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-</head>
-<body style="background-color: #8fc4b7;">
+    /* Card-specific styling for better visibility */
+    .card {
+        background-color: rgba(255, 255, 255, 0.9); /* Slight transparency for better visual effect */
+    }
 
-    <section class="h-100 h-custom">
-        <div class="container py-5 h-100">
-            <div class="row d-flex justify-content-center align-items-center h-100">
-                <div class="col-lg-8 col-xl-6">
-                    <div class="card rounded-3">
-                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/img3.webp"
-                             class="w-100" style="border-top-left-radius: .3rem; border-top-right-radius: .3rem;" alt="Sample photo">
-                        <div class="card-body p-4 p-md-5">
-                            <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2">Registration </h3>
+    /* Input field styles for better visibility */
+    .form-outline {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
 
-                            <!-- Registration form with ASP.NET MVC binding -->
-                            <form class="px-md-2" asp-action="Register" method="post" enctype="multipart/form-data">
-                                <div data-mdb-input-init class="form-outline mb-4">
-                                    <input asp-for="FirstName" class="form-control" />
-                                    <label class="form-label" asp-for="FirstName">First Name<span class="text-danger">*</span></label>
-                                    
-                                </div>
-                                <span asp-validation-for="FirstName" class="text-danger"></span>
+    .form-control {
+        border: 1px solid #ced4da; /* Add a border */
+        border-radius: 0.25rem; /* Rounded corners */
+    }
 
-                                <div data-mdb-input-init class="form-outline mb-4">
-                                    <input asp-for="LastName" class="form-control" />
-                                    <label class="form-label" asp-for="LastName">Last Name<span class="text-danger">*</span></label>
-                                </div>
-                                <span asp-validation-for="LastName" class="text-danger"></span>
-                                <div data-mdb-input-init class="form-outline mb-4">
-                                    <input asp-for="Email" class="form-control" />
-                                    <label class="form-label" asp-for="Email">Email  <span class="text-danger">*</span></label>
-                                </div>
-                                <span asp-validation-for="Email" class="text-danger"></span>
-                                <div data-mdb-input-init class="form-outline mb-4">
-                                    <input asp-for="Password" class="form-control" type="password" />
-                                    <label class="form-label" asp-for="Password">Password<span class="text-danger">*</span></label>
-                                </div>
-                                <span asp-validation-for="Password" class="text-danger"></span>
-                                <div data-mdb-input-init class="form-outline mb-4">
-                                    <input asp-for="ConfirmPassword" class="form-control" type="password" />
-                                    <label class="form-label" asp-for="ConfirmPassword">Confirm Password<span class="text-danger">*</span></label> 
-                                </div>
-                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                                <div class="form-group mb-4">
-                                    <label asp-for="ProfileImage" class="form-label">Profile Image</label>
-                                    <input asp-for="ProfileImage" class="form-control-file" type="file" />
-                                    <span asp-validation-for="ProfileImage" class="text-danger"></span>
-                                </div>
-                                <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-success btn-lg mb-1">Submit</button>
-                                <p class="mb-5 pb-lg-2" style="color: #393f81;">Already have an account? <a asp-action="Login" style="color: #393f81;">Login</a></p>
-                            </form>
-                        </div>
+        .form-control:focus {
+            border-color: #80bdff; /* Focus border color */
+            box-shadow: 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Focus shadow */
+        }
+
+    /* Label styles */
+    .form-label {
+        color: #495057; /* Darker label color */
+    }
+
+    /* Error message color */
+    .text-danger {
+        color: #dc3545; /* Bootstrap danger color */
+    }
+</style>
+
+<section class="h-100">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-lg-8 col-xl-6">
+                <div class="card rounded-3">
+                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/img3.webp"
+                         class="w-100" style="border-top-left-radius: .3rem; border-top-right-radius: .3rem;" alt="Sample photo">
+                    <div class="card-body p-4 p-md-5">
+                        <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2">Registration</h3>
+
+                        <!-- Registration form with ASP.NET MVC binding -->
+                        <form class="px-md-2" asp-action="Register" method="post" enctype="multipart/form-data">
+                            <div class="form-outline mb-4">
+                                <input asp-for="FirstName" class="form-control" />
+                                <label class="form-label" asp-for="FirstName">First Name<span class="text-danger">*</span></label>
+                            </div>
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+
+                            <div class="form-outline mb-4">
+                                <input asp-for="LastName" class="form-control" />
+                                <label class="form-label" asp-for="LastName">Last Name<span class="text-danger">*</span></label>
+                            </div>
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+
+                            <div class="form-outline mb-4">
+                                <input asp-for="Email" class="form-control" />
+                                <label class="form-label" asp-for="Email">Email  <span class="text-danger">*</span></label>
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger"></span>
+
+                            <div class="form-outline mb-4">
+                                <input asp-for="Password" class="form-control" type="password" />
+                                <label class="form-label" asp-for="Password">Password<span class="text-danger">*</span></label>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+
+                            <div class="form-outline mb-4">
+                                <input asp-for="ConfirmPassword" class="form-control" type="password" />
+                                <label class="form-label" asp-for="ConfirmPassword">Confirm Password<span class="text-danger">*</span></label>
+                            </div>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+
+                            <div class="form-group mb-4">
+                                <label asp-for="ProfileImage" class="form-label">Profile Image</label>
+                                <input asp-for="ProfileImage" class="form-control-file" type="file" />
+                                <span asp-validation-for="ProfileImage" class="text-danger"></span>
+                            </div>
+
+                            <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-success btn-lg mb-1">Submit</button>
+                            <p class="mb-5 pb-lg-2" style="color: #393f81;">Already have an account? <a asp-action="Login" style="color: #393f81;">Login</a></p>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-    <!-- Bootstrap JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/js/bootstrap.bundle.min.js"></script>
-    <!-- MDBootstrap JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.0/mdb.min.js"></script>
-
-</body>
-</html>
-
-
-
-
+    </div>
+</section>
+<!-- Load jQuery before Bootstrap and MDBootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/js/bootstrap.bundle.min.js"></script>
+<!-- MDBootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.0/mdb.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>

@@ -119,6 +119,18 @@ namespace HotelManagementFinalDemoApi.Controllers
             return NoContent();
         }
 
+        [HttpGet("GetAllManagers")]
+        public async Task<IActionResult> GetAllManagers()
+        {
+            var managerRoleId = 3; 
+            var managers = await _context.Users
+                .Where(u => u.Role == managerRoleId && u.IsActive)
+                .ToListAsync();
+            var managerDtos = UserDto.FromEntity(managers);
+
+            return Ok(managerDtos);
+        }
+
 
     }
 }

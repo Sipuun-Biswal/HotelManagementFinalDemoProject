@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using HotelManagementCoreMvcFrontend.Models;
 using System.Text;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HotelManagementCoreMvcFrontend.Controllers
 {
@@ -63,8 +64,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
                 if (Guid.TryParse(userIdString, out var userId))
                 {
                     // Assign the logged-in user's ID to the HotelDto
-                    hotel.UserId = userId;
-
+                    hotel.CreatedBy = userId;
                     var jsonContent = new StringContent(JsonConvert.SerializeObject(hotel), Encoding.UTF8, "application/json");
 
                     var response = await _httpClient.PostAsync($"{_baseUrl}Hotel", jsonContent);
@@ -169,5 +169,8 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             }
             return View(new List<Hotel>());
         }
+
+     
+
     }
 }
