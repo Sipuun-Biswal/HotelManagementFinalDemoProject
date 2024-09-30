@@ -26,6 +26,7 @@ namespace HotelManagementFinalDemoApi.Models.DataBaseDto
 
         [Required]
         public Guid UserId { get; set; }
+        public Guid? CreatedBy { get; set; }
 
         public string? Address {  get; set; }
    
@@ -45,7 +46,8 @@ namespace HotelManagementFinalDemoApi.Models.DataBaseDto
                 StateId=hotelDto.StateId,
                 CityId=hotelDto.CityId,
                 UserId=hotelDto.UserId,
-                Address=hotelDto.Address,
+                CreatedBy=hotelDto.CreatedBy,
+                Address =hotelDto.Address,
                 PhoneNo=hotelDto.PhoneNo,
                 HotelImage=hotelDto.HotelImage,
                 IsActive=hotelDto.IsActive,
@@ -61,7 +63,8 @@ namespace HotelManagementFinalDemoApi.Models.DataBaseDto
                 StateId = hotel.StateId,
                 CityId = hotel.CityId,
                 UserId = hotel.UserId,
-                Address=hotel.Address,
+                CreatedBy=hotel.CreatedBy,
+                Address =hotel.Address,
                 PhoneNo = hotel.PhoneNo,
                 HotelImage = hotel.HotelImage,
                 IsActive=hotel.IsActive

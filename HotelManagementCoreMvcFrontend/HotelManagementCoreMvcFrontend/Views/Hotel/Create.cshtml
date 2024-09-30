@@ -43,6 +43,13 @@
                     </select>
                     <span asp-validation-for="CityId" class="text-danger"></span>
                 </div>
+                <div class="form-group mb-3">
+                    <label asp-for="UserId" class="form-label">Manager<span class="text-danger">*</span></label>
+                    <select id="ManagerId" asp-for="UserId" class="form-select">
+                        <option value="">Select Manager</option>
+                    </select>
+                </div>
+
 
                 <div class="form-group mb-3">
                     <label asp-for="Address" class="form-label">Address<span class="text-danger">*</span></label>
@@ -71,12 +78,18 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
     <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.5.1.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+            // Load managers on page load
+            $.getJSON('@Url.Action("GetAllManagers", "User")', function (managers) {
+                console.log(managers);
+                $.each(managers, function (index, manager) {
+                    var fullName = manager.firstName + ' ' + manager.lastName;
+                    $('#ManagerId').append('<option value="' + manager.id + '">' + fullName + '</option>');
+                });
+            });
+
             // Load countries on page load
             $.getJSON('@Url.Action("GetCountry", "Location")', function (countries) {
                 $.each(countries, function (index, country) {

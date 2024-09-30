@@ -162,7 +162,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             ModelState.AddModelError("", "Error deleting user.");
             return RedirectToAction(nameof(Delete), new { user.Id });
         }
-        public async Task<IActionResult> GetAllGarageOwner()
+        public async Task<IActionResult> GetAllManagers()
         {
           
             var response = await _httpClient.GetAsync($"{_baseUrl}User/GetAllManagers");

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelManagementFinalDemoApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240926123944_initials")]
+    [Migration("20240930051627_initials")]
     partial class initials
     {
         /// <inheritdoc />
@@ -173,6 +173,9 @@ namespace HotelManagementFinalDemoApi.Migrations
 
                     b.Property<int>("CountryId")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("HotelImage")
                         .HasColumnType("nvarchar(max)");

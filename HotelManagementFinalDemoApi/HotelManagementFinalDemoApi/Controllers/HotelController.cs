@@ -111,5 +111,25 @@ namespace HotelManagementFinalDemoApi.Controllers
 
             return NoContent();
         }
+        [HttpGet("ByUser/{userId}")]
+        public async Task<ActionResult<HotelDto>> GetHotelByUserId(Guid userId)
+        {
+            // Fetch the hotel associated with the provided userId and ensure it's active
+            var hotel = await _context.Hotels
+                .Where(h => h.UserId == userId && h.IsActive)
+                .Include(h => h.User)
+                .Include(h => h.Country)
+                .Include(h => h.State)
+                .Include(h => h.City)
+                .FirstOrDefaultAsync();
+
+            if (hotel == null)
+            {
+                return NotFound("No active hotel found for the specified user.");
+            }
+
+            var hotelDto = HotelDto.FromEntity(hotel);
+            return Ok(hotelDto);
+        }
     }
 }

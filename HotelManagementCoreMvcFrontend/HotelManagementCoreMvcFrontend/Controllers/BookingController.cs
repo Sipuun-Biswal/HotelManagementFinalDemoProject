@@ -139,7 +139,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetBookingsByUser(Guid id)
         {
-            var response = await _httpClient.GetAsync($"{_baseUrl}Booking/GetBookingsByUser/{id }");
+            var response = await _httpClient.GetAsync($"{_baseUrl}Booking/GetBookingsByUser/{id}");
 
             var bookingdata = await response.Content.ReadAsStringAsync();
             var bookings = JsonConvert.DeserializeObject<List<Booking>>(bookingdata);
@@ -151,6 +151,31 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             return View(new List<Booking>(bookings));  
         }
 
+        public async Task<IActionResult> BookingsByHotel()
+        {
+
+            var userIdString = HttpContext.Session.GetString("UserId");
+
+            if (!Guid.TryParse(userIdString, out var userId))
+            {
+                TempData["Error"] = "You must be logged in to create a room.";
+                return RedirectToAction("Login", "Authentication");
+            }
+            var response = await _httpClient.GetAsync($"{_baseUrl}Hotel/ByUser/{userId}");
+            if (response.IsSuccessStatusCode)
+            {
+                var hotel = await response.Content.ReadFromJsonAsync<Hotel>();
+                var hotelId = hotel.Id;
+                var response2 = await _httpClient.GetAsync($"{_baseUrl}Booking/GetBookingsByHotel/{hotelId}");
+                if (response2.IsSuccessStatusCode)
+                {
+                    var jsonData = await response2.Content.ReadAsStringAsync();
+                    var bookings = JsonConvert.DeserializeObject<List<Booking>>(jsonData);
+                    return View(bookings);
+                }
+            }
+            return NotFound();
+        }
 
     }
 }

@@ -28,6 +28,8 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             }
             return View(new List<Hotel>());
         }
+      
+
      //Create hotel
         [HttpGet]
         public IActionResult Create()
@@ -170,7 +172,6 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             return View(new List<Hotel>());
         }
 
-     
 
     }
 }

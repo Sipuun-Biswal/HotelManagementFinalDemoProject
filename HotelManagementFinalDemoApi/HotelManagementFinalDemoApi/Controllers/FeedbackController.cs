@@ -119,5 +119,25 @@ namespace HotelManagementFinalDemoApi.Controllers
             
             
         }
+        [HttpGet("GetFeedbackByHotel/{hotelId}")]
+        public async Task<ActionResult<IEnumerable<FeedbackDto>>> GetFeedbackByHotel(Guid hotelId)
+        {
+        
+            var hotelFeedback = await _context.Feedbacks
+                .Include(f => f.Booking)          
+                .ThenInclude(b => b.Room)     
+                .ThenInclude(r => r.Hotel)       
+                .Where(f => f.Booking.Room.HotelId == hotelId) 
+                .ToListAsync();
+
+            if (hotelFeedback == null || hotelFeedback.Count == 0)
+            {
+                return NotFound("No feedback found for this hotel.");
+            }
+            var feedbackDtos = hotelFeedback.Select(FeedbackDto.FromEntity).ToList();
+
+            return Ok(feedbackDtos);
+        }
+
     }
-    }
+}

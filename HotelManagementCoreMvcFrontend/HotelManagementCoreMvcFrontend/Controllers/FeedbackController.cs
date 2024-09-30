@@ -118,5 +118,31 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             ModelState.AddModelError("", "Error deleting feedback.");
             return RedirectToAction(nameof(Delete), new { feedback.Id });
         }
+
+        public async Task<IActionResult> FeedbacsByHotel()
+        {
+
+            var userIdString = HttpContext.Session.GetString("UserId");
+
+            if (!Guid.TryParse(userIdString, out var userId))
+            {
+                TempData["Error"] = "You must be logged in to create a room.";
+                return RedirectToAction("Login", "Authentication");
+            }
+            var response = await _httpClient.GetAsync($"{_baseUrl}Hotel/ByUser/{userId}");
+            if (response.IsSuccessStatusCode)
+            {
+                var hotel = await response.Content.ReadFromJsonAsync<Hotel>();
+                var hotelId = hotel.Id;
+                var response2 = await _httpClient.GetAsync($"{_baseUrl}Feedback/GetFeedbackByHotel/{hotelId}");
+                if (response2.IsSuccessStatusCode)
+                {
+                    var jsonData = await response2.Content.ReadAsStringAsync();
+                    var feedbacks = JsonConvert.DeserializeObject<List<Feedback>>(jsonData);
+                    return View(feedbacks);
+                }
+            }
+            return NotFound();
+        }
     }
 }

@@ -38,10 +38,22 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             }
             return View(new List<Room>());
         }
-
+        [HttpGet]
+        public async Task<IActionResult> GetRoomByHotelAssociatedWithManager(Guid id)
+        {
+            var response = await _httpClient.GetAsync($"{_baseUrl}Room/GetRoomsByHotelUser/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonData = await response.Content.ReadAsStringAsync();
+                var room = JsonConvert.DeserializeObject<List<Room>>(jsonData);
+                return View(room);
+            }
+            return View(new List<Room>());
+        }
         [HttpGet]
         public IActionResult Create()
         {
+           
             return View();
         }
 
@@ -68,6 +80,54 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
             return View(room);
         }
+        [HttpGet]
+        public async Task<IActionResult> CreateRoom()
+        {
+            var userIdString = HttpContext.Session.GetString("UserId");
+
+            if (!Guid.TryParse(userIdString, out var userId))
+            {
+                TempData["Error"] = "You must be logged in to create a room.";
+                return RedirectToAction("Login", "Authentication");
+            }
+            var response = await _httpClient.GetAsync($"{_baseUrl}Hotel/ByUser/{userId}");
+            if (response.IsSuccessStatusCode)
+            {
+                var hotel = await response.Content.ReadFromJsonAsync<Hotel>();
+                var model = new Room()
+                {
+                    HotelId = hotel.Id
+                };
+                return View(model);
+            }
+            return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateRoom(Room room)
+        {
+            var userIdString = HttpContext.Session.GetString("UserId");
+
+            if (!Guid.TryParse(userIdString, out var userId))
+            {
+                TempData["Error"] = "You must be logged in to create a room.";
+                return RedirectToAction("Login","Authentication");
+            }
+
+            var jsonContent = new StringContent(JsonConvert.SerializeObject(room), Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"{_baseUrl}Room/CreateRoomByUserId?userId={userId}", jsonContent);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Room Success"] = "Room created successfully.";
+                return RedirectToAction("GetRoomByHotelAssociatedWithManager");
+            }
+
+            TempData["Error"] = "Error occurred while creating the room.";
+            return View(room);
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {

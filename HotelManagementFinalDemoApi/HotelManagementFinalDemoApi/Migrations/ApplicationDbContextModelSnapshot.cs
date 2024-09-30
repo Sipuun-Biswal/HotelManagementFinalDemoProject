@@ -171,6 +171,9 @@ namespace HotelManagementFinalDemoApi.Migrations
                     b.Property<int>("CountryId")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("HotelImage")
                         .HasColumnType("nvarchar(max)");
 

@@ -60,6 +60,55 @@ namespace HotelManagementFinalDemoApi.Controllers
             roomDto.Id = room.Id; 
             return CreatedAtAction("GetRoom", new { id = roomDto.Id }, roomDto);
         }
+        //Room created by manager.
+        [HttpPost("CreateRoomByUserId")]
+        public async Task<ActionResult<RoomDto>> CreateRoomByUserId([FromBody] RoomDto roomDto, [FromQuery] Guid userId)
+        {
+            // Check if the hotel associated with the room has the provided user as its owner
+            var hotel = await _context.Hotels.FirstOrDefaultAsync(h => h.Id == roomDto.HotelId && h.UserId == userId);
+
+            if (hotel == null)
+            {
+                return Forbid("You are not authorized to create a room for this hotel.");
+            }
+
+            // Check if the room number already exists in the hotel
+            bool isRoomExists = await _context.Rooms.AnyAsync(r => r.RoomNo == roomDto.RoomNo && r.HotelId == roomDto.HotelId);
+            if (isRoomExists)
+            {
+                return BadRequest("A room with the same number already exists in this hotel.");
+            }
+
+            // Create and save the new room
+            var room = RoomDto.ToEntity(roomDto);
+            room.Id = Guid.NewGuid();
+            room.IsAvailable = true;
+
+            _context.Rooms.Add(room);
+            await _context.SaveChangesAsync();
+
+            roomDto.Id = room.Id;
+            return CreatedAtAction("GetRoomsByHotelUser", new { id = roomDto.Id }, roomDto);
+        }
+
+        //Room allocated to manager.
+        [HttpGet("GetRoomsByHotelUser/{userId}")]
+        public async Task<ActionResult<IEnumerable<RoomDto>>> GetRoomsByHotelUser(Guid userId)
+        {
+            var rooms = await _context.Rooms
+                                      .Include(r => r.Hotel) 
+                                      .Where(r => r.Hotel.UserId == userId)
+                                      .ToListAsync();
+
+            if (rooms == null || rooms.Count == 0)
+            {
+                return NotFound("No rooms found for the specified user.");
+            }
+            var roomDtos = rooms.Select(RoomDto.FromEntity).ToList();
+
+            return Ok(roomDtos);
+        }
+
 
         [HttpDelete("{id}/Delete")]
         public async Task<IActionResult> DeleteRoom(Guid id)

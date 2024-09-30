@@ -188,6 +188,24 @@ namespace HotelManagementFinalDemoApi.Controllers
             var bookingDtos = userBookings.Select(b => BookingDto.FromEntity(b)).ToList();
             return Ok(bookingDtos);
         }
+        //For Manager
+        [HttpGet("GetBookingsByHotel/{hotelId}")]
+        public async Task<ActionResult<IEnumerable<BookingDto>>> GetBookingsByHotel(Guid hotelId)
+        {
+     
+            var hotelBookings = await _context.Bookings
+                .Include(b => b.User)    
+                .Include(b => b.Room)    
+                .ThenInclude(r => r.Hotel) 
+                .Where(b => b.Room.HotelId == hotelId) 
+                .ToListAsync();
+            if (hotelBookings == null || hotelBookings.Count == 0)
+            {
+                return NotFound("No bookings found for this hotel.");
+            }
+            var bookingDtos = hotelBookings.Select(BookingDto.FromEntity).ToList();
+            return Ok(bookingDtos);
+        }
 
 
     }

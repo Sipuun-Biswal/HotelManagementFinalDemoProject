@@ -1,0 +1,43 @@
+﻿@model HotelManagementCoreMvcFrontend.Models.Room
+
+@{
+    ViewData["Title"] = "Create Room";
+}
+
+<h1 class="text-center">Add Room</h1>
+
+<hr />
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form asp-action="CreateRoom" method="post" class="bg-light p-4 border rounded">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group mb-3">
+                    <input asp-for="HotelId"  hidden/>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="RoomNo" class="form-label">Room Number<span class="text-danger">*</span></label>
+                    <input asp-for="RoomNo" class="form-control" placeholder="Enter Room Number" />
+                    <span asp-validation-for="RoomNo" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Price" class="form-label">Price<span class="text-danger">*</span></label>
+                    <input asp-for="Price" class="form-control" placeholder="Enter Price" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+
+                <div class="form-group form-check mb-3">
+                    <input asp-for="IsAvailable" hidden />
+                </div>
+
+                <div class="text-center">
+                    <input type="submit" value="Create Room" class="btn btn-primary me-2" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
