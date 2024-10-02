@@ -4,15 +4,16 @@
     ViewData["Title"] = "Hotel List";
 }
 
-<h3>Hotels List</h3>
-<table class="table" id="HotelTable">
-    <thead>
+<h3 class="my-4 text-center">Hotels List</h3>
+
+<table class="table table-bordered table-striped table-hover" id="HotelTable">
+    <thead class="table-dark">
         <tr>
-            <th>Hotel</th>
-            <th>Address</th>
-            <th>Phone No</th>
-            <th>Image</th>
-            <th>Actions</th>
+            <th scope="col">Hotel</th>
+            <th scope="col">Address</th>
+            <th scope="col">Phone No</th>
+            <th scope="col">Image</th>
+            <th scope="col">Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -29,13 +30,13 @@
                     }
                 </td>
                 <td>
-                  
-                    @Html.ActionLink("View Rooms", "GetRoomsByHotel", "Room", new { hotelId = item.Id }, new { @class = "btn btn-primary" })
+                    @Html.ActionLink("View Rooms", "GetRoomsByHotel", "Room", new { hotelId = item.Id }, new { @class = "btn btn-primary btn-sm" })
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
 @section Scripts {
     <script>
         $(document).ready(function () {
@@ -43,10 +44,36 @@
                 "pageLength": 5,
                 "lengthMenu": [5, 10, 25, 50],
                 "columnDefs": [
-                    { "orderable": false, "targets": [-2, -1] }
+                    { "orderable": false, "targets": [-2, -1] }  
                 ],
-                "dom": '<"top"f>rt<"bottom"lp><"clear">'
+                "dom": '<"top"f>rt<"bottom"lp><"clear">',
+                "language": {
+                    "search": "Search hotels:" 
+                }
             });
         });
     </script>
 }
+
+<style>
+    .table thead th {
+        background-color: #000; 
+        color: white; 
+        text-align: center; 
+    }
+
+    .table tbody td {
+        vertical-align: middle; 
+        text-align: center; 
+    }
+
+    .img-thumbnail {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f1f1; /
+    }
+</style>

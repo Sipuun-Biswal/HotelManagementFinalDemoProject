@@ -18,6 +18,11 @@
                 <span asp-validation-for="HotelName" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
+                <label asp-for="Address" class="form-label">Address<span class="text-danger">*</span></label>
+                <input asp-for="Address" class="form-control" placeholder="Enter hotel address" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
                 <label asp-for="CountryId" class="form-label">Country<span class="text-danger">*</span></label>
                 <select asp-for="CountryId" class="form-select" id="CountryId">
                     <option value="">Select Country</option>
@@ -37,11 +42,6 @@
                     <option value="">Select City</option>
                 </select>
                 <span asp-validation-for="CityId" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="Address" class="form-label">Address<span class="text-danger">*</span></label>
-                <input asp-for="Address" class="form-control" placeholder="Enter hotel address" />
-                <span asp-validation-for="Address" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
                 <label asp-for="PhoneNo" class="form-label">Phone No<span class="text-danger">*</span></label>

@@ -36,7 +36,7 @@
 
             var token = new JwtSecurityToken(
                 issuer: "https://localhost:7119/",
-                audience: "https://localhost:7119/",
+                audience: "https://localhost:5167/",
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(_jwtLifespan),
                 signingCredentials: credentials);

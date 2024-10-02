@@ -7,12 +7,12 @@ namespace HotelManagementCoreMvcFrontend.Models
     {
         public Guid Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="First Name is required")]
         [StringLength(15)]
         public string FirstName { get; set; }
 
 
-        [Required]
+        [Required(ErrorMessage ="Last Name field is required")]
         [StringLength(15)]
         public string LastName { get; set; }
 

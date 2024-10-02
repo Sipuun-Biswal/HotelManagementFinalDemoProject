@@ -18,8 +18,8 @@
 
     /* Full background color for the section */
     section.h-100 {
-        background-color: #8fc4b7; /* Full page background */
-        min-height: 150vh; /* Ensure it covers the full height of the viewport */
+        background-color: #8fc4b7; 
+        min-height: 160vh; 
         display: flex;
         justify-content: center;
         align-items: center;
@@ -53,7 +53,7 @@
 
     /* Error message color */
     .text-danger {
-        color: #dc3545; /* Bootstrap danger color */
+        color: #dc3545; 
     }
 </style>
 
@@ -69,37 +69,32 @@
 
                         <!-- Registration form with ASP.NET MVC binding -->
                         <form class="px-md-2" asp-action="Register" method="post" enctype="multipart/form-data">
-                            <div class="form-outline mb-4">
-                                <input asp-for="FirstName" class="form-control" />
+                            <div class="form-group mb-2">
                                 <label class="form-label" asp-for="FirstName">First Name<span class="text-danger">*</span></label>
+                                <input asp-for="FirstName" class="form-control" />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
                             </div>
-                            <span asp-validation-for="FirstName" class="text-danger"></span>
-
-                            <div class="form-outline mb-4">
-                                <input asp-for="LastName" class="form-control" />
+                            <div class="form-group mb-2">
                                 <label class="form-label" asp-for="LastName">Last Name<span class="text-danger">*</span></label>
+                                <input asp-for="LastName" class="form-control" />
+                                <span asp-validation-for="LastName" class="text-danger"></span>
                             </div>
-                            <span asp-validation-for="LastName" class="text-danger"></span>
-
-                            <div class="form-outline mb-4">
-                                <input asp-for="Email" class="form-control" />
+                            <div class="form-group mb-2">
                                 <label class="form-label" asp-for="Email">Email  <span class="text-danger">*</span></label>
+                                <input asp-for="Email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
                             </div>
-                            <span asp-validation-for="Email" class="text-danger"></span>
-
-                            <div class="form-outline mb-4">
-                                <input asp-for="Password" class="form-control" type="password" />
+                            <div class="form-group mb-2">
                                 <label class="form-label" asp-for="Password">Password<span class="text-danger">*</span></label>
+                                <input asp-for="Password" class="form-control" type="password" />
+                                <span asp-validation-for="Password" class="text-danger"></span>
                             </div>
-                            <span asp-validation-for="Password" class="text-danger"></span>
-
-                            <div class="form-outline mb-4">
-                                <input asp-for="ConfirmPassword" class="form-control" type="password" />
+                            <div class="form-group mb-2">
                                 <label class="form-label" asp-for="ConfirmPassword">Confirm Password<span class="text-danger">*</span></label>
+                                <input asp-for="ConfirmPassword" class="form-control" type="password" />
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                             </div>
-                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-
-                            <div class="form-group mb-4">
+                            <div class="form-group mb-2">
                                 <label asp-for="ProfileImage" class="form-label">Profile Image</label>
                                 <input asp-for="ProfileImage" class="form-control-file" type="file" />
                                 <span asp-validation-for="ProfileImage" class="text-danger"></span>

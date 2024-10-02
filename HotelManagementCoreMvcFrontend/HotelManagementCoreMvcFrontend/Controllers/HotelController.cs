@@ -4,6 +4,7 @@ using HotelManagementCoreMvcFrontend.Models;
 using System.Text;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Net.Http.Headers;
 
 namespace HotelManagementCoreMvcFrontend.Controllers
 {
@@ -19,6 +20,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            SetAuthorizationHeader(_httpClient);
             var response = await _httpClient.GetAsync($"{_baseUrl}Hotel/All");
             if (response.IsSuccessStatusCode)
             {
@@ -36,7 +38,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         {
             return View();
         }
-
+        //Create Hotel Post method
         [HttpPost]
         public async Task<IActionResult> Create(IFormFile? image ,Hotel hotel)
 
@@ -44,6 +46,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
             if (ModelState.IsValid)
             {
+               
                 if (image != null && image.Length > 0)
 
                 {
@@ -60,7 +63,6 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
                     hotel.HotelImage = "/images/" + uniqueFileName;
                 }
-
                 var userIdString = HttpContext.Session.GetString("UserId");
 
                 if (Guid.TryParse(userIdString, out var userId))
@@ -68,7 +70,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
                     // Assign the logged-in user's ID to the HotelDto
                     hotel.CreatedBy = userId;
                     var jsonContent = new StringContent(JsonConvert.SerializeObject(hotel), Encoding.UTF8, "application/json");
-
+                    SetAuthorizationHeader(_httpClient);
                     var response = await _httpClient.PostAsync($"{_baseUrl}Hotel", jsonContent);
 
                     if (response.IsSuccessStatusCode)
@@ -91,6 +93,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
+            SetAuthorizationHeader(_httpClient);
             // Call API to get user by ID for editing
             var response = await _httpClient.GetAsync($"{_baseUrl}Hotel/{id}");
             if (response.IsSuccessStatusCode)
@@ -111,6 +114,9 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
             if (ModelState.IsValid)
             {
+                SetAuthorizationHeader(_httpClient);
+                var existingHotelResponse = await _httpClient.GetAsync($"{_baseUrl}Hotel/{hotel.Id}");
+                var existingHotel = await existingHotelResponse.Content.ReadFromJsonAsync<Hotel>();
                 // Handle Profile Image Upload
                 if (image != null && image.Length > 0)
 
@@ -128,10 +134,14 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
                     hotel.HotelImage = "/images/" + uniqueFileName;
                 }
+                else
+                {
+                    hotel.HotelImage = existingHotel?.HotelImage;
+                }
 
                 // Set UpdatedBy to the current user's ID (replace with your method of fetching the logged-in user)
                 // Assuming Identity is used
-
+                SetAuthorizationHeader(_httpClient);
                 var content = new StringContent(JsonConvert.SerializeObject(hotel), Encoding.UTF8, "application/json");
               
 
@@ -150,6 +160,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(Guid id)
         {
+            SetAuthorizationHeader(_httpClient);
             var response = await _httpClient.DeleteAsync($"{_baseUrl}Hotel/{id}");
             if (response.IsSuccessStatusCode)
             {
@@ -158,10 +169,11 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             ModelState.AddModelError("", "Error deleting user.");
             return RedirectToAction(nameof(Delete), new {id});
         }
-
+        //Show All Hotel For Booking
         [HttpGet]
         public async Task<IActionResult> ShowAllHotel()
         {
+            SetAuthorizationHeader(_httpClient);
             var response = await _httpClient.GetAsync($"{_baseUrl}Hotel/All");
             if (response.IsSuccessStatusCode)
             {
@@ -171,7 +183,14 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             }
             return View(new List<Hotel>());
         }
-
+        private void SetAuthorizationHeader(HttpClient httpClient)
+         {
+            var token = HttpContext.Session.GetString("Token");
+            if (!string.IsNullOrEmpty(token))
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+        }
 
     }
 }

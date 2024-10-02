@@ -3,9 +3,6 @@
 @{
     ViewData["Title"] = "Edit Room";
 }
-
-<h1 class="mb-4">@ViewData["Title"]</h1>
-
 <h4>Edit Room Details</h4>
 <hr />
 <div class="row">
@@ -20,23 +17,14 @@
                 <input asp-for="RoomNo" class="form-control" placeholder="Enter room number" />
                 <span asp-validation-for="RoomNo" class="text-danger"></span>
             </div>
-
-            
-
             <div class="form-group mb-3">
                 <label asp-for="Price" class="control-label fw-bold">Price <span class="text-danger">*</span></label>
                 <input asp-for="Price" class="form-control" placeholder="Enter room price" />
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
-
-         
             <div class="form-group form-check mb-4">
-                <input class="form-check-input" asp-for="IsAvailable" id="isAvailableCheckbox" />
-                <label class="form-check-label fw-bold" for="isAvailableCheckbox">
-                    @Html.DisplayNameFor(model => model.IsAvailable)
-                </label>
+                <input  asp-for="IsAvailable" hidden />
             </div>
-
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Save</button>
                 <a asp-action="Index" class="btn btn-secondary ms-2">Back to List</a>

@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Reflection;
 using System.Security.Claims;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
+using System.Net.Http.Headers;
 
 namespace HotelManagementCoreMvcFrontend.Controllers
 {
@@ -19,10 +20,9 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         {
             _httpClient = httpClient;
         }
-
-
         public async Task<IActionResult> Index()
         {
+            SetAuthorizationHeader(_httpClient);
             var response = await _httpClient.GetAsync($"{_baseUrl}User/GetAll");
             if (response.IsSuccessStatusCode)
             {
@@ -43,31 +43,18 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         {
             if (ModelState.IsValid)
             {
-                string? profileImagePath = null;
-
-
+               string? profileImagePath = null;
                 if (model.ProfileImage != null && model.ProfileImage.Length > 0)
                 {
-
                     var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images");
-
-
-
                     var uniqueFileName = Guid.NewGuid().ToString() + "_" + model.ProfileImage.FileName;
-
-
                     var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
                     using (var fileStream = new FileStream(filePath, FileMode.Create))
                     {
                         await model.ProfileImage.CopyToAsync(fileStream);
                     }
-
-
                     profileImagePath = "/images/" + uniqueFileName;
                 }
-
-
                 var user = new User
                 {
                     Id = Guid.NewGuid(),
@@ -78,10 +65,9 @@ namespace HotelManagementCoreMvcFrontend.Controllers
                     Role = model.Role,
                     ProfileImage = profileImagePath
                 };
-
-
                 var jsonData = JsonSerializer.Serialize(user);
                 var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                SetAuthorizationHeader(_httpClient);
                 var response = await _httpClient.PostAsync($"{_baseUrl}Auth/register", content);
                 if (response.IsSuccessStatusCode)
                 {
@@ -97,6 +83,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
+            SetAuthorizationHeader(_httpClient);
             // Call API to get user by ID for editing
             var response = await _httpClient.GetAsync($"{_baseUrl}User/{id}");
             if (response.IsSuccessStatusCode)
@@ -112,10 +99,11 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(IFormFile? image, User user)
         {
-
-
             if (ModelState.IsValid)
             {
+                SetAuthorizationHeader(_httpClient);
+                var existingUserResponse = await _httpClient.GetAsync($"{_baseUrl}User/{user.Id}");
+                var existingUser = await existingUserResponse.Content.ReadFromJsonAsync<User>();
                 // Handle Profile Image Upload
                 if (image != null && image.Length > 0)
 
@@ -133,13 +121,17 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
                     user.ProfileImage = "/images/" + uniqueFileName;
                 }
+                else
+                {
+                    user.ProfileImage = existingUser?.ProfileImage;
+                }
 
                 // Set UpdatedBy to the current user's ID (replace with your method of fetching the logged-in user)
                 // Assuming Identity is used
 
                 var jsonData = JsonSerializer.Serialize(user);
                 var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-
+                SetAuthorizationHeader(_httpClient);
                 var response = await _httpClient.PutAsync($"{_baseUrl}User/{user.Id}", content);
                 if (response.IsSuccessStatusCode)
                 {
@@ -151,23 +143,45 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
             return View(user);
         }
-        [HttpPost]
-        public async Task<IActionResult> Delete(User user)
+
+        public async Task<IActionResult> Delete(Guid Id)
         {
-            var response = await _httpClient.DeleteAsync($"{_baseUrl}User/{user.Id}");
+            SetAuthorizationHeader(_httpClient);
+            var response = await _httpClient.DeleteAsync($"{_baseUrl}User/{Id}");
             if (response.IsSuccessStatusCode)
             {
                 return RedirectToAction(nameof(Index));
             }
             ModelState.AddModelError("", "Error deleting user.");
-            return RedirectToAction(nameof(Delete), new { user.Id });
+            return RedirectToAction(nameof(Delete), new {Id=Id});
+        }
+        //Check if user associated with bookings or not
+        public async Task<IActionResult> DeleteConformation(Guid Id)
+        {
+           
+            var response = await _httpClient.GetAsync($"{_baseUrl}User/Exist-bookings/{Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Delete", new {id=Id});
+            }
+            var message = await response.Content.ReadAsStringAsync();
+            TempData["Warning"] = message;
+            return RedirectToAction("Index");
         }
         public async Task<IActionResult> GetAllManagers()
         {
-          
             var response = await _httpClient.GetAsync($"{_baseUrl}User/GetAllManagers");
              var users = await response.Content.ReadFromJsonAsync<List<User>>();
             return Json(users);
+        }
+        //Set Authorization Header
+        private void SetAuthorizationHeader(HttpClient httpClient)
+        {
+            var token = HttpContext.Session.GetString("Token");
+            if (!string.IsNullOrEmpty(token))
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
         }
     }
 }

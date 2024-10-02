@@ -7,7 +7,7 @@
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh;">
     <div class="col-md-6">
         <div class="card shadow-sm p-4 mb-5 bg-white rounded">
-            <h2 class="text-center mb-4">Edit Profile</h2>
+            <h2 class="text-center mb-4">Edit User</h2>
             <hr />
             <form asp-action="Edit" method="post" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -43,9 +43,9 @@
                     <input name="image" class="form-control" type="file" />
                 </div>
 
-                <div class="d-grid gap-2">
+                <div class="d-flex gap-1">
                     <input type="submit" value="Save" class="btn btn-primary btn-md" />
-                    <a asp-action="Index" class="btn btn-secondary btn-md">Back to List</a>
+                    <a asp-action="index" class="btn btn-secondary btn-md">Back to List</a>
                 </div>
             </form>
         </div>

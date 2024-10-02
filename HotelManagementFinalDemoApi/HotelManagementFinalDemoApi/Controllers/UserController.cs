@@ -5,11 +5,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HotelManagementFinalDemoApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -18,14 +20,16 @@ namespace HotelManagementFinalDemoApi.Controllers
             _context = context;
         }
         [HttpGet("GetAll")]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = await _context.Users.Where(u=>u.IsActive).ToListAsync();
+            var users = await _context.Users.Where(u=>u.IsActive && u.Role != 2).ToListAsync();
             var userDtos = UserDto.FromEntity(users);
             return Ok(userDtos);
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Manager,User")]
         public async Task<IActionResult> GetUserById(Guid id)
         {
 
@@ -41,6 +45,7 @@ namespace HotelManagementFinalDemoApi.Controllers
         }
 
         [HttpPost("create")]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> CreateUser([FromBody] UserDto userDto)
         {
             if (!ModelState.IsValid)
@@ -71,6 +76,7 @@ namespace HotelManagementFinalDemoApi.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Manager,User")]
         public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UserDto userDto)
         {
             if (!ModelState.IsValid)
@@ -105,6 +111,7 @@ namespace HotelManagementFinalDemoApi.Controllers
 
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUsers(Guid id)
         {
              var user= await _context.Users.FindAsync(id);
@@ -124,13 +131,31 @@ namespace HotelManagementFinalDemoApi.Controllers
         {
             var managerRoleId = 3; 
             var managers = await _context.Users
-                .Where(u => u.Role == managerRoleId && u.IsActive)
+                .Where(u => u.Role == managerRoleId && u.IsActive && !_context.Hotels.Any(h => h.UserId == u.Id))
                 .ToListAsync();
             var managerDtos = UserDto.FromEntity(managers);
 
             return Ok(managerDtos);
         }
+        //Check if user Associated with bookings
+        [HttpGet("Exist-Bookings/{id}")]
+        public async Task<IActionResult> CheckExistBooking(Guid id)
+        {
+            var user = await _context.Users.FindAsync(id)
+        ;
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+            var hasActiveBookings = await _context.Bookings
+                .AnyAsync(b => b.UserId == id && b.Status == 1);
 
+            if (hasActiveBookings)
+            {
+                return BadRequest("This user is associated with active bookings and cannot be deleted.");
+            }
+            return Ok("true");
+        }
 
     }
 }

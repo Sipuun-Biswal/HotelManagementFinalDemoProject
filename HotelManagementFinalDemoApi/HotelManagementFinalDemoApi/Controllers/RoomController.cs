@@ -86,9 +86,7 @@ namespace HotelManagementFinalDemoApi.Controllers
 
             _context.Rooms.Add(room);
             await _context.SaveChangesAsync();
-
-            roomDto.Id = room.Id;
-            return CreatedAtAction("GetRoomsByHotelUser", new { id = roomDto.Id }, roomDto);
+            return Ok();
         }
 
         //Room allocated to manager.
@@ -185,6 +183,23 @@ namespace HotelManagementFinalDemoApi.Controllers
             var roomDtos = rooms.Select(RoomDto.FromEntity).ToList();
             return Ok(roomDtos);
         }
+        [HttpGet("Exist-Bookings/{id}")]
+        public async Task<IActionResult> CheckExistBooking(Guid id)
+        {
+            var room = await _context.Rooms.FindAsync(id)
+        ;
+            if (room == null)
+            {
+                return NotFound("Room not found.");
+            }
+            var hasActiveBookings = await _context.Bookings
+                .AnyAsync(b => b.RoomId == id && b.Status == 1);
 
+            if (hasActiveBookings)
+            {
+                return BadRequest("This room is associated with active bookings and cannot be deleted.");
+            }
+            return Ok("true");
+        }
     }
 }

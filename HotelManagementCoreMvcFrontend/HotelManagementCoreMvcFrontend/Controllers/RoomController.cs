@@ -1,6 +1,7 @@
 ﻿using HotelManagementCoreMvcFrontend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Data;
 using System.Net.Http;
 using System.Text;
 
@@ -39,9 +40,9 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             return View(new List<Room>());
         }
         [HttpGet]
-        public async Task<IActionResult> GetRoomByHotelAssociatedWithManager(Guid id)
+        public async Task<IActionResult> GetRoomByHotelAssociatedWithManager(Guid userId)
         {
-            var response = await _httpClient.GetAsync($"{_baseUrl}Room/GetRoomsByHotelUser/{id}");
+            var response = await _httpClient.GetAsync($"{_baseUrl}Room/GetRoomsByHotelUser/{userId}");
             if (response.IsSuccessStatusCode)
             {
                 var jsonData = await response.Content.ReadAsStringAsync();
@@ -102,7 +103,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             }
             return NotFound();
         }
-
+        //Create room by manager.
         [HttpPost]
         public async Task<IActionResult> CreateRoom(Room room)
         {
@@ -120,10 +121,10 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             if (response.IsSuccessStatusCode)
             {
                 TempData["Room Success"] = "Room created successfully.";
-                return RedirectToAction("GetRoomByHotelAssociatedWithManager");
+                return RedirectToAction(nameof(GetRoomByHotelAssociatedWithManager), new {userId});
             }
 
-            TempData["Error"] = "Error occurred while creating the room.";
+            TempData["Error"] = "Same room no already exist.";
             return View(room);
         }
 
@@ -154,11 +155,19 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
                 var content = new StringContent(JsonConvert.SerializeObject(room), Encoding.UTF8, "application/json");
 
-
+                var role = HttpContext.Session.GetString("Role");
+                var userId = HttpContext.Session.GetString("UserId");
                 var response = await _httpClient.PutAsync($"{_baseUrl}Room/{room.Id}", content);
                 if (response.IsSuccessStatusCode)
                 {
-                    return RedirectToAction(nameof(Index));
+                    if (role == "Admin")
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else if (role == "Manager")
+                    {
+                        return RedirectToAction(nameof(GetRoomByHotelAssociatedWithManager), new { userId });
+                    }
                 }
 
                 ModelState.AddModelError("", "Error updating user.");
@@ -166,18 +175,47 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
             return View(room);
         }
-
-        [HttpPost]
+        //Final Delete
         public async Task<IActionResult> Delete(Guid id)
         {
+            var role = HttpContext.Session.GetString("Role");
+            var userId = HttpContext.Session.GetString("UserId");
             var response = await _httpClient.DeleteAsync($"{_baseUrl}Room/{id}/Delete");
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction(nameof(Index));
+                TempData["Delete"] = "Room Deleted";
+                if (role == "Admin")
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else if (role == "Manager")
+                {
+                    return RedirectToAction(nameof(GetRoomByHotelAssociatedWithManager), new {userId});
+                }
+               
             }
             ModelState.AddModelError("", "Error deleting user.");
             return RedirectToAction(nameof(Delete), new {id});
         }
+        public async Task<IActionResult> DeleteConformation(Guid Id)
+        {
+            var userId= HttpContext.Session.GetString("UserId");
+            var role = HttpContext.Session.GetString("Role");
+            var response = await _httpClient.GetAsync($"{_baseUrl}Room/Exist-bookings/{Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Delete", new { id = Id });
+            }
+            var message = await response.Content.ReadAsStringAsync();
+            TempData["Warning"] = message;
+            if (role == "Admin")
+            {
+                return RedirectToAction("Index");
+            }
+                return RedirectToAction("GetRoomByHotelAssociatedWithManager", new { userId });
+            
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetRoomsByHotel(Guid hotelId)
         {

@@ -8,12 +8,12 @@ namespace HotelManagementCoreMvcFrontend.ViewModels
     public class RegisterViewModel
     {
         [Required(ErrorMessage = "First Name is required")]
-        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "First name can only contain alphabetic characters.")]
+        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "First name can only contain alphabetic characters.")]
         [StringLength(15)]
         public string FirstName { get; set; }
 
         [Required(ErrorMessage = "Last Name is required")]
-        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Last name can only contain alphabetic characters.")]
+        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Last name can only contain alphabetic characters.")]
         [StringLength(15)]
         public string LastName { get; set; }
 
@@ -32,6 +32,7 @@ namespace HotelManagementCoreMvcFrontend.ViewModels
         [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string ConfirmPassword { get; set; }
         public IFormFile? ProfileImage { get; set; }
+        [Required(ErrorMessage ="Role is required")]
         public Role Role { get; set; }
     }
  

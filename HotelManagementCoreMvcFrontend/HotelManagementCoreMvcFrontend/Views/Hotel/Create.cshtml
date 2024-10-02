@@ -19,7 +19,11 @@
                     <input asp-for="HotelName" class="form-control" placeholder="Enter Hotel Name" />
                     <span asp-validation-for="HotelName" class="text-danger"></span>
                 </div>
-
+                <div class="form-group mb-3">
+                    <label asp-for="Address" class="form-label">Address<span class="text-danger">*</span></label>
+                    <input asp-for="Address" class="form-control" placeholder="Enter Address" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
                 <div class="form-group mb-3">
                     <label asp-for="CountryId" class="form-label">Country<span class="text-danger">*</span></label>
                     <select asp-for="CountryId" class="form-select" id="CountryId">
@@ -49,14 +53,6 @@
                         <option value="">Select Manager</option>
                     </select>
                 </div>
-
-
-                <div class="form-group mb-3">
-                    <label asp-for="Address" class="form-label">Address<span class="text-danger">*</span></label>
-                    <input asp-for="Address" class="form-control" placeholder="Enter Address" />
-                    <span asp-validation-for="Address" class="text-danger"></span>
-                </div>
-
                 <div class="form-group mb-3">
                     <label asp-for="PhoneNo" class="form-label">Phone No<span class="text-danger">*</span></label>
                     <input asp-for="PhoneNo" class="form-control" placeholder="Enter Phone Number" />
@@ -78,6 +74,9 @@
 </div>
 
 @section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.5.1.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {

@@ -1,5 +1,6 @@
 ﻿using HotelManagementFinalDemoApi.Models.DataBaseDto;
 using HotelManagementFinalDemoApi.Models.DataModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ namespace HotelManagementFinalDemoApi.Controllers
         }
 
         [HttpGet("GetAllBooking")]
+        [Authorize(Roles ="Admin")]
         public async Task<ActionResult<IEnumerable<BookingDto>>> GetAllBookings()
         {
 
@@ -74,11 +76,12 @@ namespace HotelManagementFinalDemoApi.Controllers
         }
 
         [HttpPost("createBooking")]
+        [Authorize(Roles ="Admin,Manager,User")]
         public async Task<ActionResult<BookingDto>> PostBooking(BookingDto bookingDto)
         {
-            if (bookingDto.CheckInDate.Date < DateTime.Now.Date)
+            if (bookingDto.CheckInDate.Date < DateTime.Now.Date || bookingDto.CheckInDate>bookingDto.CheckOutDate)
             {
-                return BadRequest("The check-in date cannot be in the past. Please select a date from today or later.");
+                return BadRequest("The check-in date cannot be in the past. and Check-In date should be smaller than check-Out date.");
             }
             bool isRoomBooked = await _context.Bookings
                 .AnyAsync(b => b.RoomId == bookingDto.RoomId
@@ -104,9 +107,26 @@ namespace HotelManagementFinalDemoApi.Controllers
 
             return CreatedAtAction("GetBookingsByUser", new { userId = booking.UserId }, BookingDto.FromEntity(booking));
         }
+        [HttpGet("GetBookingById/{id}")]
+        [Authorize(Roles ="Admin,Manager,User")]
+        public async Task<ActionResult<BookingDto>> GetBookingById(Guid id)
+        {
+            var booking = await _context.Bookings
+                .Include(b => b.User)
+                .Include(b => b.Room)
+                .ThenInclude(b => b.Hotel)
+                .FirstOrDefaultAsync(b => b.Id == id);
+            if (booking == null)
+            {
+                return NotFound("Booking not found.");
+            }
 
+            var bookingDto = BookingDto.FromEntity(booking);
+            return Ok(bookingDto);
+        }
 
         [HttpPut("{id}")]
+        [Authorize(Roles ="Admin,Manager,User")]
         public async Task<IActionResult> PutBooking(Guid id, BookingDto bookingDto)
         {
             if (id != bookingDto.Id)
@@ -160,6 +180,7 @@ namespace HotelManagementFinalDemoApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles ="Admin,Manager,User")]
         public async Task<IActionResult> DeleteBooking(Guid id)
         {
             var booking = await _context.Bookings.FindAsync(id);
@@ -175,6 +196,7 @@ namespace HotelManagementFinalDemoApi.Controllers
         }
 
         [HttpGet("GetBookingsByUser/{userId}")]
+        [Authorize(Roles ="Admin,Manager,User")]
         public async Task<ActionResult<IEnumerable<BookingDto>>> GetBookingsByUser(Guid userId)
         {
             var query = _context.Bookings
@@ -190,19 +212,15 @@ namespace HotelManagementFinalDemoApi.Controllers
         }
         //For Manager
         [HttpGet("GetBookingsByHotel/{hotelId}")]
+        [Authorize(Roles ="Manager")]
         public async Task<ActionResult<IEnumerable<BookingDto>>> GetBookingsByHotel(Guid hotelId)
         {
-     
             var hotelBookings = await _context.Bookings
                 .Include(b => b.User)    
                 .Include(b => b.Room)    
                 .ThenInclude(r => r.Hotel) 
                 .Where(b => b.Room.HotelId == hotelId) 
                 .ToListAsync();
-            if (hotelBookings == null || hotelBookings.Count == 0)
-            {
-                return NotFound("No bookings found for this hotel.");
-            }
             var bookingDtos = hotelBookings.Select(BookingDto.FromEntity).ToList();
             return Ok(bookingDtos);
         }

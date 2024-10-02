@@ -49,7 +49,7 @@ namespace HotelManagementFinalDemoApi
           ValidateLifetime = true,
           ValidateIssuerSigningKey = true,
           ValidIssuer = "https://localhost:7119/",
-          ValidAudience = "https://localhost:7119/",
+          ValidAudience = "https://localhost:5167/",
           IssuerSigningKey = new SymmetricSecurityKey(key)
       };
   });

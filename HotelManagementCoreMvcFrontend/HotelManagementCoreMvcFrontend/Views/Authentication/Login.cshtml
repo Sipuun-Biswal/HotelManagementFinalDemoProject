@@ -1,114 +1,111 @@
 ﻿@model HotelManagementCoreMvcFrontend.ViewModels.LoginViewModel
 
 @{
-    ViewData["Title"] = "Login";
-    Layout = null;
-    var Register = TempData["Registration"] as string;
+ViewData["Title"] = "Login";
+Layout = null;
+var Register = TempData["Registration"] as string;
 }
 
-<!DOCTYPE html>
-<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Login</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Login</title>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet">
-    <!-- MDBootstrap CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.0/mdb.min.css" rel="stylesheet">
-    <style>
-        .gradient-custom-2 {
-            background: #9A616D;
-        }
-    </style>
+<!-- Bootstrap CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/css/bootstrap.min.css" rel="stylesheet">
+<!-- MDBootstrap CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.0/mdb.min.css" rel="stylesheet">
+<style>
+.gradient-custom-2 {
+    background: #9A616D;
+}
+</style>
 </head>
-<body style="background-color: #eee;">
+<section class="h-100 gradient-form" style="background-color: #eee;">
+<div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-xl-10">
+            <div class="card rounded-3 text-black">
+                <div class="row g-0">
+                    <div class="col-lg-6">
+                        <div class="card-body p-md-5 mx-md-4">
 
-    <section class="h-100 gradient-form" style="background-color: #eee;">
-        <div class="container py-5 h-100">
-            <div class="row d-flex justify-content-center align-items-center h-100">
-                <div class="col-xl-10">
-                    <div class="card rounded-3 text-black">
-                        <div class="row g-0">
-                            <div class="col-lg-6">
-                                <div class="card-body p-md-5 mx-md-4">
+                            <div class="text-center">
+                                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp" style="width: 185px;" alt="logo">
+                            </div>
 
-                                    <div class="text-center">
-                                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp" style="width: 185px;" alt="logo">
-                                        <h4 class="mt-1 mb-5 pb-1">We are The Lotus Team</h4>
-                                    </div>
-
-                                    @if (ViewData.ModelState.Any())
-                                    {
-                                        <div class="alert alert-danger">
-                                            <ul>
-                                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                                                {
-                                                    <li>@error.ErrorMessage</li>
-                                                }
-                                            </ul>
-                                        </div>
-                                    }
-                                    @if (!string.IsNullOrEmpty(Register))
-                                    {
-                                        <div class="toast-container position-fixed top-0 end-0 p-3">
-                                            <div class="toast align-items-center text-bg-success border-0" id="loginToast" role="alert" aria-live="assertive" aria-atomic="true">
-                                                <div class="d-flex">
-                                                    <div class="toast-body">
-                                                        @Register
-                                                    </div>
-                                                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                                                </div>
+                            @if (ViewData.ModelState.Any())
+                            {
+                                <div class="alert alert-danger">
+                                    <ul>
+                                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                        {
+                                            <li>@error.ErrorMessage</li>
+                                        }
+                                    </ul>
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(Register))
+                            {
+                                <div class="toast-container position-fixed top-0 end-0 p-3">
+                                    <div class="toast align-items-center text-bg-success border-0" id="loginToast" role="alert" aria-live="assertive" aria-atomic="true">
+                                        <div class="d-flex">
+                                            <div class="toast-body">
+                                                @Register
                                             </div>
+                                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                                         </div>
-                                    }
+                                    </div>
+                                </div>
+                            }
 
-                                    <form asp-action="Login" method="post">
-                                        <p>Please login to your account</p>
+                            <form asp-action="Login" method="post">
+                                <p>Please login to your account</p>
 
-                                        <div data-mdb-input-init class="form-outline mb-4">
-                                            <input asp-for="Email" type="email" id="form2Example11" class="form-control" placeholder="Phone number or email address" />
-                                            <label class="form-label" for="form2Example11">Username</label>
-                                        </div>
-                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                <div data-mdb-input-init class="form-group mb-2">
+                                    <label class="form-label" for="form2Example11">Email</label>
+                                    <input asp-for="Email" type="email" id="form2Example11" class="form-control" placeholder=" email address" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                                        
 
-                                        <div data-mdb-input-init class="form-outline mb-4">
-                                            <input asp-for="Password" type="password" id="form2Example22" class="form-control" />
-                                            <label class="form-label" for="form2Example22">Password</label>
-                                        </div>
-                                        <span asp-validation-for="Password" class="text-danger"></span>
-
-                                        <div class="text-center pt-1 mb-5 pb-1">
-                                            <button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">Log in</button>
-
-                                        </div>
-
-                                        <div class="d-flex align-items-center justify-content-center pb-4">
-                                            <p class="mb-0 me-2">Don't have an account?</p>
-                                            <a asp-action="Register" class="btn btn-outline-danger">Create new</a>
-                                        </div>
-
-                                    </form>
+                                <div data-mdb-input-init class="form-group mb-2">
+                                    <label class="form-label" for="form2Example22">Password</label>
+                                    <input asp-for="Password" type="password" id="form2Example22" class="form-control" placeholder="Password" />
+                                    <span asp-validation-for="Password" class="text-danger"></span>
 
                                 </div>
-                            </div>
-                            <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
-                                <div class="text-white px-3 py-4 p-md-5 mx-md-4">
-                                    <h4 class="mb-4">Log in and book your stay!</h4>
-                                    <p class="small mb-0">
 
-                                        Discover your perfect stay with our easy-to-use room booking website. Explore a wide range of accommodations, from luxury hotels to cozy boutiques, all at unbeatable prices. Book your dream getaway today and experience exceptional comfort and convenience!
-                                    </p>
+                                <div class="text-center pt-1 mb-5 pb-1">
+                                    <button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">Log in</button>
+
                                 </div>
-                            </div>
+
+                                <div class="d-flex align-items-center justify-content-center pb-4">
+                                    <p class="mb-0 me-2">Don't have an account?</p>
+                                    <a asp-action="Register" class="btn btn-outline-danger">Create new</a>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
+                        <div class="text-white px-3 py-4 p-md-5 mx-md-4">
+                            <h4 class="mb-4">Log in and book your stay!</h4>
+                            <p class="small mb-0">
+
+                                Discover your perfect stay with our easy-to-use room booking website. Explore a wide range of accommodations, from luxury hotels to cozy boutiques, all at unbeatable prices. Book your dream getaway today and experience exceptional comfort and convenience!
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</div>
+</section>
 
     <script>
         window.onload = function () {
@@ -119,10 +116,22 @@
             }
         };
     </script>
+<script>
+    $(document).ready(function () {
+        $('form').on('submit', function () {
+            $(this).find('.text-danger').text(''); 
+            $(this).find('.input-validation-error').removeClass('input-validation-error');
+            $(this).removeData('validator'); 
+            $(this).removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse($(this));
+        });
+    });
+</script>
 
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.0/js/bootstrap.bundle.min.js"></script>
     <!-- MDBootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.3.0/mdb.min.js"></script>
-</body>
-</html>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+

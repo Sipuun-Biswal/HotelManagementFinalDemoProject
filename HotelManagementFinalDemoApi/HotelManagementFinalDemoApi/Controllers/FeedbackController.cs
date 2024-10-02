@@ -130,10 +130,6 @@ namespace HotelManagementFinalDemoApi.Controllers
                 .Where(f => f.Booking.Room.HotelId == hotelId) 
                 .ToListAsync();
 
-            if (hotelFeedback == null || hotelFeedback.Count == 0)
-            {
-                return NotFound("No feedback found for this hotel.");
-            }
             var feedbackDtos = hotelFeedback.Select(FeedbackDto.FromEntity).ToList();
 
             return Ok(feedbackDtos);

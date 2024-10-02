@@ -1,5 +1,6 @@
 ﻿using HotelManagementFinalDemoApi.Models.DataBaseDto;
 using HotelManagementFinalDemoApi.Models.DataModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,7 @@ namespace HotelManagementFinalDemoApi.Controllers
             _context = context;
         }
         [HttpGet("All")]
+        [Authorize(Roles ="Admin,Manager,User")]
         public async Task<ActionResult<IEnumerable<HotelDto>>> GetAllHotels()
         {
             var hotels = await _context.Hotels.Where(u=>u.IsActive).
@@ -29,6 +31,7 @@ namespace HotelManagementFinalDemoApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Manager,User")]
         public async Task<ActionResult<HotelDto>> GetHotelById(Guid id)
         {
             var hotel = await _context.Hotels.Where(h=>h.Id==id && h.IsActive)
@@ -46,6 +49,7 @@ namespace HotelManagementFinalDemoApi.Controllers
             return Ok(hotelDto);
         }
         [HttpPost]
+        [Authorize(Roles="Admin")]
         public async Task<ActionResult<HotelDto>> CreateHotel([FromBody] HotelDto hotelDto)
         {
             if (!ModelState.IsValid)
@@ -63,6 +67,7 @@ namespace HotelManagementFinalDemoApi.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> UpdateHotel(Guid id, [FromBody] HotelDto hotelDto)
     {
             if (!ModelState.IsValid)
@@ -88,6 +93,7 @@ namespace HotelManagementFinalDemoApi.Controllers
             hotel.CityId = hotelDto.CityId;
             hotel.UserId = hotelDto.UserId;
             hotel.PhoneNo = hotelDto.PhoneNo;
+            hotel.Address = hotelDto.Address;
             hotel.HotelImage = hotelDto.HotelImage;
 
             _context.Hotels.Update(hotel);
@@ -97,6 +103,7 @@ namespace HotelManagementFinalDemoApi.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteHotel(Guid id)
         {
             var hotel = await _context.Hotels.FindAsync(id);

@@ -3,6 +3,7 @@ using HotelManagementCoreMvcFrontend.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace HotelManagementCoreMvcFrontend.Controllers
@@ -45,6 +46,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
 
                 };
+                SetAuthorizationHeader(_httpClient);
                 var jsonData = JsonConvert.SerializeObject(booking);
                 var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync($"{_baseUrl}Booking/createBooking", content);
@@ -70,6 +72,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            SetAuthorizationHeader(_httpClient);
             var response = await _httpClient.GetAsync($"{_baseUrl}Booking/GetAllBooking");
             if (response.IsSuccessStatusCode)
             {
@@ -83,6 +86,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid id)
         {
+            SetAuthorizationHeader(_httpClient);
             var response = await _httpClient.GetAsync($"{_baseUrl}Booking/{id}");
             if (response.IsSuccessStatusCode)
             {
@@ -97,7 +101,8 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var response = await _httpClient.GetAsync($"{_baseUrl}Booking/{id}");
+            SetAuthorizationHeader(_httpClient);
+            var response = await _httpClient.GetAsync($"{_baseUrl}Booking/GetBookingById/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var booking = await response.Content.ReadFromJsonAsync<Booking>();
@@ -112,12 +117,20 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         {
             if (ModelState.IsValid)
             {
+                var role = HttpContext.Session.GetString("Role");
                 var content = new StringContent(JsonConvert.SerializeObject(booking), Encoding.UTF8, "application/json");
-
+                SetAuthorizationHeader(_httpClient);
                 var response = await _httpClient.PutAsync($"{_baseUrl}Booking/{booking.Id}", content);
                 if (response.IsSuccessStatusCode)
                 {
-                    return RedirectToAction(nameof(Index));
+                    if (role == "Admin")
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else if (role == "Manager")
+                    {
+                        return RedirectToAction(nameof(BookingsByHotel));
+                    }
                 }
 
                 ModelState.AddModelError("", "Error updating user.");
@@ -128,10 +141,24 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(Guid id)
         {
+                var role = HttpContext.Session.GetString("Role");
+                var userId = HttpContext.Session.GetString("UserId");
+            SetAuthorizationHeader(_httpClient);
             var response = await _httpClient.DeleteAsync($"{_baseUrl}Booking/{id}");
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction(nameof(Index));
+                if (role == "Admin")
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else if (role == "Manager")
+                {
+                    return RedirectToAction(nameof(BookingsByHotel));
+                }
+                else if(role == "User")
+                {
+                    return RedirectToAction(nameof(GetBookingsByUser), new {userId});
+                }
             }
             ModelState.AddModelError("", "Error deleting user.");
             return RedirectToAction(nameof(Delete), new {id});
@@ -139,6 +166,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         [HttpGet]
         public async Task<IActionResult> GetBookingsByUser(Guid id)
         {
+            SetAuthorizationHeader(_httpClient);
             var response = await _httpClient.GetAsync($"{_baseUrl}Booking/GetBookingsByUser/{id}");
 
             var bookingdata = await response.Content.ReadAsStringAsync();
@@ -153,6 +181,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
         public async Task<IActionResult> BookingsByHotel()
         {
+          
 
             var userIdString = HttpContext.Session.GetString("UserId");
 
@@ -161,6 +190,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
                 TempData["Error"] = "You must be logged in to create a room.";
                 return RedirectToAction("Login", "Authentication");
             }
+            SetAuthorizationHeader(_httpClient);
             var response = await _httpClient.GetAsync($"{_baseUrl}Hotel/ByUser/{userId}");
             if (response.IsSuccessStatusCode)
             {
@@ -176,6 +206,13 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             }
             return NotFound();
         }
-
+        private void SetAuthorizationHeader(HttpClient httpClient)
+        {
+            var token = HttpContext.Session.GetString("Token");
+           if (!string.IsNullOrEmpty(token))
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+        }
     }
 }
