@@ -228,6 +228,28 @@ namespace HotelManagementFinalDemoApi.Migrations
                     b.ToTable("Otps");
                 });
 
+            modelBuilder.Entity("HotelManagementFinalDemoApi.Models.DataModels.ResertPassword", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ExiparyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ResertPasswords");
+                });
+
             modelBuilder.Entity("HotelManagementFinalDemoApi.Models.DataModels.Room", b =>
                 {
                     b.Property<Guid>("Id")

@@ -174,14 +174,27 @@ public async Task<IActionResult> VerifyOtp(OtpViewModel model)
 {
     if (ModelState.IsValid)
     {
-        var jsonData = JsonConvert.SerializeObject(new { model.Email, Code = model.Code });
+                var role = HttpContext.Session.GetString("Role");
+                var jsonData = JsonConvert.SerializeObject(new { model.Email, Code = model.Code });
         var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PostAsync($"{_baseUrl}Auth/OtpVerification",content);
 
         if (response.IsSuccessStatusCode)
         {
-            return RedirectToAction("Login");
+            if (role == "User")
+            {
+                return RedirectToAction("Login");
+            }
+        else if (role == "Admin")
+            {
+            var Subject = "Resert Your Password";
+                        SetAuthorizationHeader(_httpClient);
+                        var content1 = new StringContent("", Encoding.UTF8, "application/json");
+                        var response2 = await _httpClient.PostAsync($"{_baseUrl}auth/send-email/{model.Email}?subject={Subject}&message=",content1);
+
+                return RedirectToAction("Index", "User");
+            }
         }
 
         ModelState.AddModelError("", "OTP verification failed. Invalid OTP or email expired.");
@@ -274,7 +287,40 @@ public async Task<IActionResult> IsEmailAvailable(string email)
 
     return Json(true);
 }
-}
+        [HttpGet("reset-password")]
+        public IActionResult ResetPassword(Guid userId,string token)
+        {
+            var passwordResert = new ResertPasswordViewModel
+            {
+                UserId = userId,
+                Token = token
+            };
+            return View(passwordResert);
+        }
+        [HttpPost("reset-password")]
+        public async Task<IActionResult>ResetPassword(ResertPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var jsonContent = JsonConvert.SerializeObject(model);
+                var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PostAsync($"{_baseUrl}auth/reset-password", content);
+                if (response.IsSuccessStatusCode) {
+                    return RedirectToAction("Login", "Authentication");
+                }
+            }
+            return View(model);
+        }
+        private void SetAuthorizationHeader(HttpClient httpClient)
+        {
+            var token = HttpContext.Session.GetString("Token");
+            if (!string.IsNullOrEmpty(token))
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+        }
+    }
 }
 
 

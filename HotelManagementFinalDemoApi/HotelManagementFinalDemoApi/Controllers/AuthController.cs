@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using System.Web;
 
 namespace HotelManagementFinalDemoApi.Controllers
 {
@@ -165,6 +167,98 @@ namespace HotelManagementFinalDemoApi.Controllers
             }
             var emailExists = await _context.Users.AnyAsync(u => u.Email == email);
             return emailExists;
+        }
+        //Send Email For Resert Password
+        [HttpPost("send-email/{email}")]
+        public async Task<IActionResult> Sendmail(string email, string subject, string? message)
+        {
+          
+                var user = await _context.Users.FirstOrDefaultAsync(u=>u.Email==email);
+                if (User.IsInRole("Admin"))
+                {
+                    // Generate a secure token
+                    var token = PasswordHash.GenerateSecureToken();
+                    var baseUrl = "https://localhost:5167/reset-password"; // URL to your MVC controller
+
+                    // Construct the reset password link
+                    var resetLink = $"{baseUrl}?userId={user.Id}&token={HttpUtility.UrlEncode(token)}";
+
+                    // Prepare the email body
+                    var text = $@"
+                           Mr/Mrs: {user.FirstName} {user.LastName},
+
+                           Welcome to  Hotel Room Booking! You have been added  by the admin.
+                           Email:{user.Email}
+                           To get started, please set your password below:
+                           {resetLink}";
+
+                    // Create a new password reset token
+                    var passwordResetToken = new ResertPassword()
+                    {
+                       
+                        UserId = user.Id,
+                        Token = token,
+                        ExiparyTime = DateTime.Now.AddMinutes(5) // Set the expiration time to 5 minutes
+                    };
+                    // Store the token in your database
+                     _context.ResertPasswords.Add(passwordResetToken);
+                     await _context.SaveChangesAsync();
+                // Send the email with the constructed message
+                await _emailService.SendEmailAsync(email, subject, text);
+                }
+                else
+                {
+
+                    await _emailService.SendEmailAsync(email, subject, message);
+                }
+                return Ok("Message has been sent to your email");
+
+        }
+        //Resert Password 
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDTO model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var token = await _context.ResertPasswords.FirstOrDefaultAsync(U => U.UserId == model.UserId && U.Token == model.Token);
+
+            if (token == null)
+            {
+                return BadRequest("Token not found.");
+            }
+
+            if (token.ExiparyTime <= DateTime.Now)
+            {
+                return BadRequest("Token has expired.");
+            }
+
+            // Remove the token once it's valid
+            _context.ResertPasswords.Remove(token);
+            await _context.SaveChangesAsync();
+
+            var user = await _context.Users.FindAsync(model.UserId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Hash the new password
+            try
+            {
+                user.PasswordHash = PasswordHash.HashPassword(model.NewPassword);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Password hashing failed: {ex.Message}");
+            }
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            return Ok("Password has been reset successfully.");
         }
 
     }

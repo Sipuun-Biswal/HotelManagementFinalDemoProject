@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HotelManagementFinalDemoApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240930051627_initials")]
-    partial class initials
+    [Migration("20241003053908_initals")]
+    partial class initals
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -229,6 +229,28 @@ namespace HotelManagementFinalDemoApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Otps");
+                });
+
+            modelBuilder.Entity("HotelManagementFinalDemoApi.Models.DataModels.ResertPassword", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ExiparyTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ResertPasswords");
                 });
 
             modelBuilder.Entity("HotelManagementFinalDemoApi.Models.DataModels.Room", b =>

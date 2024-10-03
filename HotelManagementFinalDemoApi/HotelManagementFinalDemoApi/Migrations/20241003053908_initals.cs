@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HotelManagementFinalDemoApi.Migrations
 {
     /// <inheritdoc />
-    public partial class initials : Migration
+    public partial class initals : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -52,6 +52,21 @@ namespace HotelManagementFinalDemoApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Otps", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ResertPasswords",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ExiparyTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ResertPasswords", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -309,6 +324,9 @@ namespace HotelManagementFinalDemoApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "Otps");
+
+            migrationBuilder.DropTable(
+                name: "ResertPasswords");
 
             migrationBuilder.DropTable(
                 name: "Bookings");
