@@ -182,18 +182,18 @@ public async Task<IActionResult> VerifyOtp(OtpViewModel model)
 
         if (response.IsSuccessStatusCode)
         {
-            if (role == "User")
+            if (role == "Admin")
             {
-                return RedirectToAction("Login");
-            }
-        else if (role == "Admin")
-            {
-            var Subject = "Resert Your Password";
+                        var Subject = "Resert Your Password";
                         SetAuthorizationHeader(_httpClient);
                         var content1 = new StringContent("", Encoding.UTF8, "application/json");
-                        var response2 = await _httpClient.PostAsync($"{_baseUrl}auth/send-email/{model.Email}?subject={Subject}&message=",content1);
+                        var response2 = await _httpClient.PostAsync($"{_baseUrl}auth/send-email/{model.Email}?subject={Subject}&message=", content1);
 
-                return RedirectToAction("Index", "User");
+                        return RedirectToAction("Index", "User");
+                   }
+             else  
+            {
+                return RedirectToAction("Login");
             }
         }
 

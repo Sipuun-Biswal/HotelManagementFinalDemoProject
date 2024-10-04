@@ -34,11 +34,11 @@
             <tr>
                 <td>
                     <!-- Displaying only date part for CheckInDate -->
-                    @item.CheckInDate.ToString("dd/MM/yyyy")
+                    @item.CheckInDate.ToString("MM/dd/yyyy")
                 </td>
                 <td>
                     <!-- Displaying only date part for CheckOutDate -->
-                    @String.Format("{0:dd/MM/yyyy}", item.CheckOutDate)
+                    @String.Format("{0:MM/dd/yyyy}", item.CheckOutDate)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Status)

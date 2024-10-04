@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Hotel List";
     var SuccessHotel = TempData["HotelSuccess"] as string;
+    var hotelEdit = TempData["EidtHotel"] as string;
 }
 @if (!string.IsNullOrEmpty(SuccessHotel))
 {
@@ -11,6 +12,19 @@
             <div class="d-flex">
                 <div class="toast-body">
                     @SuccessHotel
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
+@if (!string.IsNullOrEmpty(hotelEdit))
+{
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div class="toast align-items-center text-bg-success border-0" id="loginToast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    @hotelEdit
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
@@ -45,7 +59,7 @@
                     <td>
                         @if (!string.IsNullOrEmpty(item.HotelImage))
                         {
-                            <img src="@Url.Content($"~{item.HotelImage}")" class="img-thumbnail" width="80" />
+                            <img src="@Url.Content($"~{item.HotelImage}")" class="img-thumbnail" height="220" width="220" />
                         }
                     </td>
                     <td>

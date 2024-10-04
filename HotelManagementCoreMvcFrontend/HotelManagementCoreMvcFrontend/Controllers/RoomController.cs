@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Data;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 
 
@@ -18,6 +19,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         }
         public async Task<JsonResult> GetHotel()
         {
+            SetAuthorizationHeader(_httpClient);
             var response = await _httpClient.GetAsync($"{_baseUrl}Hotel/All");
             if (response.IsSuccessStatusCode)
             {
@@ -162,10 +164,12 @@ namespace HotelManagementCoreMvcFrontend.Controllers
                 {
                     if (role == "Admin")
                     {
+                        TempData["RoomEdit"] = "Update Succesful";
                         return RedirectToAction(nameof(Index));
                     }
                     else if (role == "Manager")
                     {
+                        TempData["RoomEdit"] = "Update Succesful";
                         return RedirectToAction(nameof(GetRoomByHotelAssociatedWithManager), new { userId });
                     }
                 }
@@ -215,7 +219,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
                 return RedirectToAction("GetRoomByHotelAssociatedWithManager", new { userId });
             
         }
-
+        //Action nethod for showing rooms to user.
         [HttpGet]
         public async Task<IActionResult> GetRoomsByHotel(Guid hotelId)
         {
@@ -230,6 +234,14 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
             var rooms = JsonConvert.DeserializeObject<List<Room>>(roomsData);
             return View(new List<Room>(rooms));
+        }
+        private void SetAuthorizationHeader(HttpClient httpClient)
+        {
+            var token = HttpContext.Session.GetString("Token");
+            if (!string.IsNullOrEmpty(token))
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
         }
     }
 

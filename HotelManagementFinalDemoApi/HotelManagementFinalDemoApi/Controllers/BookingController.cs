@@ -93,7 +93,7 @@ namespace HotelManagementFinalDemoApi.Controllers
                 return BadRequest("The room is already booked for the selected dates.");
             }
             var room = await _context.Rooms.FindAsync(bookingDto.RoomId);
-            if (room == null || !room.IsAvailable)
+            if (room == null )
             {
                 return BadRequest("The room is not available.");
             }

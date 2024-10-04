@@ -95,7 +95,7 @@
             <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
             <div class="navbar-profile d-flex align-items-center">
                 <span class="text-white me-2">@name</span>
-                <img src="@image" alt="Profile Icon" class="rounded-circle profile-icon" style height="40px" width="40px" >
+                <img src="@image" alt="Profile Icon" class="rounded-circle profile-icon" style height="40px" width="40px">
                 <div class="dropdown">
                     <button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                         Profile
@@ -119,7 +119,6 @@
             {
                 <h4 class="text-white"></h4>
                 <a href="@Url.Action("Dashboard", "Home")">Dashboard</a>
-                @Html.ActionLink("Book Hotel", "ShowAllHotel", "Hotel", new { @class = "btn btn-primary" })
                 <a href="@Url.Action("Index", "User")">User</a>
                 <a href="@Url.Action("Index", "Hotel")">Hotels</a>
                 <a href="@Url.Action("Index", "Room")">Rooms</a>
@@ -133,7 +132,6 @@
             {
                 <h4 class="text-white mt-4"></h4>
                 <a href="@Url.Action("Dashboard", "Home")">Dashboard</a>
-                @Html.ActionLink("Book Hotel", "ShowAllHotel", "Hotel", new { @class = "btn btn-primary" })
                 <a href="@Url.Action("GetRoomByHotelAssociatedWithManager", "Room",new{userId = userId})">Rooms</a>
                 <a href="@Url.Action("BookingsByHotel", "Booking")">Bookings</a>
                 <a href="@Url.Action("FeedbacsByHotel", "Feedback")">Show Feedback</a>
@@ -152,7 +150,7 @@
         </div>
 
         <div class="content" id="content">
-          
+
             @RenderBody()
         </div>
     </div>
@@ -177,7 +175,7 @@
 
     @RenderSection("Scripts", required: false)
     <!-- Bootstrap JS -->
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

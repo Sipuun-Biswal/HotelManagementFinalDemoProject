@@ -2,7 +2,7 @@
 @{
     var BookingSuccesfulMessage = TempData["BookingSuccesful"] as string;
 }
-<h2>Bookings</h2>
+<h3>Bookings</h3>
 
 @if (!string.IsNullOrEmpty(ViewBag.Message))
 {
@@ -13,36 +13,35 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Check-In Date</th>
-                <th>Check-Out Date</th>
-                <th>Status</th>
-                <th>Room No</th>
-                <th>Hotel Name</th>
-                <th>Action</th>
+                <th class="table-heading">Check-In Date</th>
+                <th class="table-heading">Check-Out Date</th>
+                <th class="table-heading">Status</th>
+                <th class="table-heading">Room No</th>
+                <th class="table-heading">Hotel Name</th>
+                <th class="table-heading">Action</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var booking in Model)
             {
                 <tr>
-                    <td> @String.Format("{0:dd/MM/yyyy}", booking.CheckInDate)</td>
-                    <td>@String.Format("{0:dd/MM/yyyy}",booking.CheckOutDate)</td>
-                    <td>@booking.Status</td>
+                    <td>@String.Format("{0:MM/dd/yyyy}", booking.CheckInDate)</td>
+                    <td>@String.Format("{0:MM/dd/yyyy}", booking.CheckOutDate)</td>
+                    <td class="status-green">@booking.Status</td>
                     <td>@booking.RoomNo</td>
                     <td>@booking.HotelName</td>
                     <td>
-                    @Html.ActionLink("Give Feedback", "SubmitFeedback", "Feedback", new { id = booking.Id }, new { @class = "btn btn-warning btn-sm" })
+                        @Html.ActionLink("Give Feedback", "SubmitFeedback", "Feedback", new { id = booking.Id }, new { @class = "btn btn-warning btn-sm me-2" })
                         <form asp-action="Delete" asp-route-id="@booking.Id" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to cancel this booking of room no @booking.RoomNo?');">
                             <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
                         </form>
-                     <td>
-                    
-                    
-              </tr>
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
 }
+
 @if (!string.IsNullOrEmpty(BookingSuccesfulMessage))
 {
     <div class="toast-container position-fixed top-0 end-0 p-3">
@@ -56,6 +55,7 @@ else
         </div>
     </div>
 }
+
 <script>
     window.onload = function () {
         var toastEl = document.getElementById('loginToast');
@@ -66,3 +66,16 @@ else
     };
 </script>
 
+<style>
+    .table-heading {
+        color: black;
+    }
+
+    .status-green {
+        color: green;
+    }
+
+    .btn-sm {
+        margin-right: 5px; 
+    }
+</style>

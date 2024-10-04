@@ -110,8 +110,6 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(IFormFile? image, Hotel hotel)
         {
-
-
             if (ModelState.IsValid)
             {
                 SetAuthorizationHeader(_httpClient);
@@ -148,7 +146,9 @@ namespace HotelManagementCoreMvcFrontend.Controllers
                 var response = await _httpClient.PutAsync($"{_baseUrl}Hotel/{hotel.Id}", content);
                 if (response.IsSuccessStatusCode)
                 {
+                    TempData["EidtHotel"] = "Hotel Update Succesfully";
                     return RedirectToAction(nameof(Index));
+
                 }
 
                 ModelState.AddModelError("", "Something Else User Have Not Updated.");

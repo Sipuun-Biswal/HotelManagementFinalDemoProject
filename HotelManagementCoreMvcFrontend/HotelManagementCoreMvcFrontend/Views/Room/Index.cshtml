@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Room List";
     var SuccessRoom = TempData["Room Success"] as string;
+    var editRoom = TempData["RoomEdit"] as string;
 }
 @if (!string.IsNullOrEmpty(SuccessRoom))
 {
@@ -17,71 +18,131 @@
         </div>
     </div>
 }
+@if (!string.IsNullOrEmpty(editRoom))
+{
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div class="toast align-items-center text-bg-success border-0" id="loginToast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    @editRoom
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
 
 <h3 class="mb-4">@ViewData["Title"]</h3>
 
 <p>
-    <a asp-action="Create" class="btn btn-success mb-3">Create New Room</a>
+    <a asp-action="Create" class="btn btn-success mb-3">Add Room</a>
 </p>
+
+<div class="mb-3">
+    <label for="hotelDropdown" class="form-label" style="font-weight: bold;">Hotel:</label>
+    <select id="hotelDropdown" class="form-select form-select-sm" style="width: 200px; font-weight: bold;">
+        <option value="">-- Select a Hotel --</option>
+    </select>
+</div>
+
 
 <div class="table-responsive">
     <table id="roomTable" class="table table-striped table-hover table-bordered">
-    <thead class="thead-dark">
-        <tr>
-            <th>Hotel Name</th>
-            <th>Room No</th>
-            <th>Price</th>
-                <th>Status for Today</th>
-            <th class="text-center">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+        <thead style="background-color: black; color: white;">
             <tr>
-                <td>@Html.DisplayFor(modelItem => item.HotelName)</td>
-                <td>@Html.DisplayFor(modelItem => item.RoomNo)</td>
-                <td>@Html.DisplayFor(modelItem => item.Price)</td>
-                <td>
-                    @if (item.IsAvailable)
-                    {
-                        <span class="badge bg-success">Available</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-danger">Not Available</span>
-                    }
-                </td>
-                <td class="text-center">
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Edit</a>
-                        <form asp-action="DeleteConformation" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this room?');">
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
-                </td>
+                <th data-name="HotelId" hidden>HotelId</th>
+                <th>Hotel Name</th>
+                <th>Room No</th>
+                <th>Price</th>
+                <th>Status for Today</th>
+                <th class="text-center">Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td hidden>@Html.DisplayFor(modelItem => item.HotelId)</td>
+                    <td>@Html.DisplayFor(modelItem => item.HotelName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.RoomNo)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Price)</td>
+                    <td>
+                        @if (item.IsAvailable)
+                        {
+                            <span class="badge bg-success">Available</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Not Available</span>
+                        }
+                    </td>
+                    <td class="text-center">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Edit</a>
+                        <form asp-action="DeleteConformation" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this room?');">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                        @Html.ActionLink("Book", "CreateBooking", "Booking", new { id = item.Id }, new { @class = "btn btn-success btn-sm" })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
+
+
 @section Scripts {
     <script>
         $(document).ready(function () {
             var warning = '@TempData["Warning"]';
             if (warning) {
                 alert(warning);
-                    
             }
+            $.ajax({
+                url: '@Url.Action("GetHotel", "Room")',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    var hotelDropdown = $('#hotelDropdown');
+                    hotelDropdown.empty();
+                    hotelDropdown.append('<option value="">-- Select Hotel --</option>');
+
+                    $.each(data, function (index, hotel) {
+                        hotelDropdown.append($('<option>', {
+                            value: hotel.id,
+                            text: hotel.hotelName
+                        }));
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.log('Error fetching hotels:', error);
+                }
+            });
+
+            $('#hotelDropdown').on('change', function () {
+                filterTable();
+            });
+
+            function filterTable() {
+                var selectedHotelId = $('#hotelDropdown').val();
+                var hotelColumnIndex = $('#roomTable th[data-name="HotelId"]').index();
+                var hotelSearch = selectedHotelId === "" ? '' : selectedHotelId;
+                var table = $('#roomTable').DataTable();
+                table.column(hotelColumnIndex).search(hotelSearch).draw();
+            }
+
             $('#roomTable').DataTable({
                 "pageLength": 5,
                 "lengthMenu": [5, 10, 25, 50],
+                "order":[[4,"asc"]],
                 "columnDefs": [
-                    { "orderable": false, "targets": [-2, -1] }
+                    { "orderable": false, "targets": [ -1] }
                 ],
                 "dom": '<"top"f>rt<"bottom"lp><"clear">'
             });
         });
     </script>
 }
+
 <script>
     window.onload = function () {
         var toastEl = document.getElementById('loginToast');

@@ -135,7 +135,9 @@ namespace HotelManagementCoreMvcFrontend.Controllers
                 var response = await _httpClient.PutAsync($"{_baseUrl}User/{user.Id}", content);
                 if (response.IsSuccessStatusCode)
                 {
+                    TempData["SuccesUpdate"] = "Update Succesfull";
                     return RedirectToAction("Dashboard", "Home");
+                    
                 }
 
                 ModelState.AddModelError("", "Error updating user.");
