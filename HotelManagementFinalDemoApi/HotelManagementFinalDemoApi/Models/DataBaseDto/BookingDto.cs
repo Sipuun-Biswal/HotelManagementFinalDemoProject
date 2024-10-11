@@ -11,6 +11,7 @@ namespace HotelManagementFinalDemoApi.Models.DataBaseDto
 
 
         [Required]
+        [ForeignKey("User")]
         public Guid UserId { get; set; }
         [Required]
         [ForeignKey("Room")]
@@ -19,28 +20,19 @@ namespace HotelManagementFinalDemoApi.Models.DataBaseDto
 
         [Required]
         public DateTime CheckInDate { get; set; }
-
         [Required]
         public DateTime CheckOutDate { get; set; }
-
-
         [Required]
         public Status Status { get; set; }
-
+        public bool? IsFeedbackGiven {  get; set; }
+        public string? FullName {  get; set; }
         public int ? RoomNo { get; set; }
         public string? HotelName { get; set; }
-
         public Guid CreatedBy { get; set; }
-
-
         public DateTime CreatedDate { get; set; } = DateTime.Now;
-
-
         public Guid? UpdatedBy { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
-
-
         public static Booking ToEntity(BookingDto bookingDto)
         {
             return new Booking()
@@ -68,6 +60,7 @@ namespace HotelManagementFinalDemoApi.Models.DataBaseDto
                 CheckInDate = booking.CheckInDate,
                 CheckOutDate = booking.CheckOutDate,
                 Status = (Status)booking.Status,
+                FullName=booking.User?.FirstName +" "+booking.User?.LastName,
                 RoomNo=booking.Room?.RoomNo,
                 HotelName=booking.Room?.Hotel?.HotelName,
                 CreatedBy = booking.CreatedBy,

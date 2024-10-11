@@ -1,46 +1,82 @@
 ﻿@model HotelManagementCoreMvcFrontend.ViewModels.OtpViewModel
 
 @{
-    ViewData["Title"] = "Verify Otp";
+    ViewData["Title"] = "Verify OTP";
+    Layout = null; // Ensure this is set to null for a standalone page
 }
+<style>
+    body {
+        background-color: #f8f9fa; /* Light background color */
+        font-family: Arial, sans-serif; /* Font style */
+    }
 
-<h3 class="text-center">Otp Verification</h3>
+    .container {
+        margin-top: 50px; /* Top margin for the container */
+    }
 
-<!-- Add the message at the top in red -->
-<p class="text-center text-danger" style="font-size: 1.2rem;">
-    A verification code has been sent to your email. Please enter the code below to verify.
-</p>
+    .card {
+        margin-top: 2rem; /* Margin for card component */
+        border-radius: 8px; /* Rounded corners */
+    }
 
-<hr />
-<div class="row justify-content-center">
-    <div class="col-md-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <form asp-action="VerifyOtp" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <div class="form-group mb-3">
-                        <label asp-for="Code" class="control-label"></label>
-                        <input asp-for="Code" class="form-control" />
-                        <span asp-validation-for="Code" class="text-danger"></span>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label>Email</label>
-                        <input type="email" class="form-control" asp-for="Email" value="@ViewBag.Email" readonly />
-                    </div>
-                    <div class="form-group text-center">
-                        <input type="submit" value="Verify" class="btn btn-primary" />
-                    </div>
-                </form>
+    .form-group label {
+        font-weight: 500; /* Bold labels */
+    }
+
+    h3 {
+        margin-top: 1.5rem; /* Top margin for heading */
+        color: #343a40; /* Darker heading color */
+    }
+
+    .error-message {
+        font-size: 1.2rem; /* Font size for error message */
+    }
+</style>
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+ 
+<div class="container">
+    <!-- Title -->
+    <h3 class="text-center">OTP Verification</h3>
+
+    <!-- Add the message at the top in red -->
+    <p class="text-center text-danger error-message">
+        A verification code has been sent to your email. Please enter the code below to verify.
+    </p>
+
+    <hr />
+
+    <!-- Form Container -->
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form asp-action="VerifyOtp" method="post">
+                        <!-- Validation Summary -->
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Email Field -->
+                        <div class="form-group mb-3">
+                            <label>Email</label>
+                            <input type="email" class="form-control" asp-for="Email" value="@TempData["Email"]" readonly />
+                        </div>
+
+                        <!-- OTP Code Field -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Code" class="control-label">Enter Code<span class="text-danger">*</span></label>
+                            <input asp-for="Code" class="form-control" placeholder="Enter OTP Code" />
+                            <span asp-validation-for="Code" class="text-danger"></span>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="form-group text-center">
+                            <input type="submit" value="Verify" class="btn btn-primary btn-block" />
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
-<div>
-</div>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>

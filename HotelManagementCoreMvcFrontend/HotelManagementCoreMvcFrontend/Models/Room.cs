@@ -15,7 +15,7 @@ namespace HotelManagementCoreMvcFrontend.Models
         [Required(ErrorMessage ="Room No is required")]
         public int RoomNo { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="Price is required")]
         [Column(TypeName = "decimal(10, 2)")]
         public decimal Price { get; set; }
 

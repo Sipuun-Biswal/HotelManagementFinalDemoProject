@@ -21,49 +21,6 @@ namespace HotelManagementFinalDemoApi.Controllers
         [Authorize(Roles ="Admin")]
         public async Task<ActionResult<IEnumerable<BookingDto>>> GetAllBookings()
         {
-
-            var today = DateTime.Now.Date;
-
-           
-            var pastBookings = await _context.Bookings
-                .Include(b => b.Room)
-                .Where(b => b.CheckOutDate < today) 
-                .ToListAsync();
-
-            foreach (var booking in pastBookings)
-            {
-                var room = booking.Room;
-                room.IsAvailable = true; 
-                _context.Entry(room).State = EntityState.Modified;
-                _context.Bookings.Remove(booking); 
-            }
-            await _context.SaveChangesAsync();
-            var bookingsForToday = await _context.Bookings
-                .Include(b => b.Room)
-                .Where(b => b.CheckInDate <= today && b.CheckOutDate > today) 
-                .ToListAsync();
-
-            foreach (var booking in bookingsForToday)
-            {
-                var room = booking.Room;
-                room.IsAvailable = false; 
-                _context.Entry(room).State = EntityState.Modified;
-            }
-
-            var availableRooms = await _context.Rooms
-                .Where(r => !_context.Bookings.Any(b => b.RoomId == r.Id
-                        && b.CheckInDate <= today
-                        && b.CheckOutDate > today))  
-                .ToListAsync();
-
-            foreach (var room in availableRooms)
-            {
-                room.IsAvailable = true;  
-                _context.Entry(room).State = EntityState.Modified;
-            }
-
-            await _context.SaveChangesAsync();
-
             var currentBookings = await _context.Bookings
                 .Include(b => b.User)
                 .Include(b => b.Room)
@@ -79,14 +36,17 @@ namespace HotelManagementFinalDemoApi.Controllers
         [Authorize(Roles ="Admin,Manager,User")]
         public async Task<ActionResult<BookingDto>> PostBooking(BookingDto bookingDto)
         {
-            if (bookingDto.CheckInDate.Date < DateTime.Now.Date || bookingDto.CheckInDate>bookingDto.CheckOutDate)
+            if (bookingDto.CheckInDate.Date < DateTime.Now.Date || bookingDto.CheckInDate>= bookingDto.CheckOutDate)
             {
-                return BadRequest("The check-in date cannot be in the past. and Check-In date should be smaller than check-Out date.");
+                return BadRequest("The check-in date cannot be in the past. and Check-In date should be smaller than check-Out date.And check-in-date and chek-out-date cant be same");
             }
             bool isRoomBooked = await _context.Bookings
-                .AnyAsync(b => b.RoomId == bookingDto.RoomId
-                            && b.CheckInDate < bookingDto.CheckOutDate
-                            && b.CheckOutDate > bookingDto.CheckInDate);
+            .AnyAsync(b => b.RoomId == bookingDto.RoomId
+                        && (
+                            (b.CheckInDate <= bookingDto.CheckInDate && b.CheckOutDate > bookingDto.CheckInDate) || // Overlaps on Check-In
+                            (b.CheckInDate < bookingDto.CheckOutDate && b.CheckOutDate >= bookingDto.CheckOutDate) || // Overlaps on Check-Out
+                            (b.CheckInDate >= bookingDto.CheckInDate && b.CheckOutDate <= bookingDto.CheckOutDate)    // Inside an existing booking
+                        ));
 
             if (isRoomBooked)
             {
@@ -133,17 +93,9 @@ namespace HotelManagementFinalDemoApi.Controllers
             {
                 return BadRequest();
             }
-
-           
-            bool isRoomBooked = await _context.Bookings
-                .AnyAsync(b => b.RoomId == bookingDto.RoomId
-                            && b.Id != id
-                            && b.CheckInDate < bookingDto.CheckOutDate
-                            && b.CheckOutDate > bookingDto.CheckInDate);
-
-            if (isRoomBooked)
+            if (bookingDto.CheckInDate.Date < DateTime.Now.Date || bookingDto.CheckInDate >= bookingDto.CheckOutDate)
             {
-                return BadRequest("The room is already booked for the selected dates.");
+                return BadRequest("The check-in date cannot be in the past. and Check-In date should be smaller than check-Out date.And check-in-date and chek-out-date cant be same");
             }
 
             var booking = await _context.Bookings.FindAsync(id);
@@ -152,7 +104,19 @@ namespace HotelManagementFinalDemoApi.Controllers
             {
                 return NotFound();
             }
+            //check Room is available or not
+            bool isRoomBooked = await _context.Bookings
+           .AnyAsync(b => b.RoomId == bookingDto.RoomId
+                       && (
+                           (b.CheckInDate <= bookingDto.CheckInDate && b.CheckOutDate > bookingDto.CheckInDate) || // Overlaps on Check-In
+                           (b.CheckInDate < bookingDto.CheckOutDate && b.CheckOutDate >= bookingDto.CheckOutDate) || // Overlaps on Check-Out
+                           (b.CheckInDate >= bookingDto.CheckInDate && b.CheckOutDate <= bookingDto.CheckOutDate)    // Inside an existing booking
+                       ));
 
+            if (isRoomBooked)
+            {
+                return BadRequest("The room is already booked for the selected dates.");
+            }
             // Update the booking
             booking.UserId = bookingDto.UserId;
             booking.RoomId = bookingDto.RoomId;
@@ -163,21 +127,10 @@ namespace HotelManagementFinalDemoApi.Controllers
             booking.UpdatedAt = DateTime.Now;
 
             _context.Entry(booking).State = EntityState.Modified;
-
-            if (!await BookingExists(id))
-            {
-                return NotFound();
-            }
-
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private async Task<bool> BookingExists(Guid id)
-        {
-            return await _context.Bookings.AnyAsync(e => e.Id == id);
-        }
+        }   
 
         [HttpDelete("{id}")]
         [Authorize(Roles ="Admin,Manager,User")]
@@ -194,22 +147,79 @@ namespace HotelManagementFinalDemoApi.Controllers
 
             return NoContent();
         }
-
         [HttpGet("GetBookingsByUser/{userId}")]
-        [Authorize(Roles ="Admin,Manager,User")]
+        [Authorize(Roles = "Admin,Manager,User")]
         public async Task<ActionResult<IEnumerable<BookingDto>>> GetBookingsByUser(Guid userId)
         {
+            var today = DateTime.Now.Date;
+
+
+            var pastBookings = await _context.Bookings
+                .Include(b => b.Room)
+                .Where(b => b.CheckOutDate < today)
+                .ToListAsync();
+
+            foreach (var booking in pastBookings)
+            {
+                var room = booking.Room;
+                room.IsAvailable = true;
+                _context.Entry(room).State = EntityState.Modified;
+                _context.Bookings.Remove(booking);
+            }
+            await _context.SaveChangesAsync();
+            var bookingsForToday = await _context.Bookings
+                .Include(b => b.Room)
+                .Where(b => b.CheckInDate <= today && b.CheckOutDate > today)
+                .ToListAsync();
+
+            foreach (var booking in bookingsForToday)
+            {
+                var room = booking.Room;
+                room.IsAvailable = false;
+                _context.Entry(room).State = EntityState.Modified;
+            }
+
+            var availableRooms = await _context.Rooms
+                .Where(r => !_context.Bookings.Any(b => b.RoomId == r.Id
+                        && b.CheckInDate <= today
+                        && b.CheckOutDate > today))
+                .ToListAsync();
+
+            foreach (var room in availableRooms)
+            {
+                room.IsAvailable = true;
+                _context.Entry(room).State = EntityState.Modified;
+            }
+
+            await _context.SaveChangesAsync();
+
+            //Get All User booking
             var query = _context.Bookings
                 .Include(b => b.User)
                 .Include(b => b.Room)
                 .ThenInclude(b => b.Hotel)
                 .Where(b => b.UserId == userId);
 
-             var userBookings = await query.ToListAsync();
+            var userBookings = await query.ToListAsync();
+            var bookingIds = userBookings.Select(b => b.Id).ToList();
+            var feedbackBookingIds = await _context.Feedbacks
+                .Where(f => bookingIds.Contains(f.BookingId))
+                .Select(f => f.BookingId)  
+                .ToListAsync();
+            var bookingDtos = userBookings.Select(b =>
+            {
+                var dto = BookingDto.FromEntity(b);
 
-            var bookingDtos = userBookings.Select(b => BookingDto.FromEntity(b)).ToList();
+                // If the booking ID is present in feedbackBookingIds, mark IsFeedbackGiven as true
+                dto.IsFeedbackGiven = feedbackBookingIds.Contains(b.Id);
+
+                return dto;
+            }).ToList();
+
             return Ok(bookingDtos);
+
         }
+
         //For Manager
         [HttpGet("GetBookingsByHotel/{hotelId}")]
         [Authorize(Roles ="Manager")]

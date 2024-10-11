@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using HotelManagementCoreMvcFrontend.Helper;
 
 namespace HotelManagementCoreMvcFrontend.Models
 {
@@ -18,7 +19,7 @@ namespace HotelManagementCoreMvcFrontend.Models
         [Required(ErrorMessage ="Manager is Required")]
         public Guid? UserId { get; set; }
         public Guid CreatedBy { get; set; } = Guid.Empty;
-        [Required(ErrorMessage = "Address Field is required")]
+        [Required(ErrorMessage = "Address  is required")]
         public string? Address { get; set; }
         [DataType(DataType.PhoneNumber)]
         [Display(Name = "Phone Number")]
@@ -26,6 +27,7 @@ namespace HotelManagementCoreMvcFrontend.Models
         [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$",
                    ErrorMessage = "Entered phone format is not valid.")]
         public string? PhoneNo { get; set; }
+        [AllowedFileExtensions(new[] { ".jpg", ".jpeg", ".png", ".gif" }, ErrorMessage = "Please upload a valid image file (jpg, jpeg, png, gif).")]
         public string? HotelImage { get; set; }
         public virtual Country? Country { get; set; }
         public virtual State? State { get; set; }

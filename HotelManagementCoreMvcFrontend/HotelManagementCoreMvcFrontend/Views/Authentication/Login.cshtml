@@ -35,17 +35,7 @@ var Register = TempData["Registration"] as string;
                                 <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp" style="width: 185px;" alt="logo">
                             </div>
 
-                            @if (ViewData.ModelState.Any())
-                            {
-                                <div class="alert alert-danger">
-                                    <ul>
-                                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                                        {
-                                            <li>@error.ErrorMessage</li>
-                                        }
-                                    </ul>
-                                </div>
-                            }
+          
                             @if (!string.IsNullOrEmpty(Register))
                             {
                                 <div class="toast-container position-fixed top-0 end-0 p-3">
@@ -61,17 +51,17 @@ var Register = TempData["Registration"] as string;
                             }
 
                             <form asp-action="Login" method="post">
-                                <p>Please login to your account</p>
-
+                                    <p>Welcome Back! Log In to Continue</p>
+                                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                                 <div data-mdb-input-init class="form-group mb-2">
-                                    <label class="form-label" for="form2Example11">Email</label>
+                                        <label class="form-label" for="form2Example11">Email<span class="text-danger">*</span></label>
                                     <input asp-for="Email" type="email" id="form2Example11" class="form-control" placeholder="Email Address" />
                                     <span asp-validation-for="Email" class="text-danger"></span>
                                 </div>
                                         
 
                                 <div data-mdb-input-init class="form-group mb-2">
-                                    <label class="form-label" for="form2Example22">Password</label>
+                                        <label class="form-label" for="form2Example22">Password<span class="text-danger">*</span></label>
                                     <input asp-for="Password" type="password" id="form2Example22" class="form-control" placeholder="Password" />
                                     <span asp-validation-for="Password" class="text-danger"></span>
 
@@ -84,7 +74,7 @@ var Register = TempData["Registration"] as string;
 
                                 <div class="d-flex align-items-center justify-content-center pb-4">
                                     <p class="mb-0 me-2">Don't have an account?</p>
-                                    <a asp-action="Register" class="btn btn-outline-danger">Create new</a>
+                                    <a asp-action="Register" class="btn btn-outline-danger">Register</a>
                                 </div>
 
                             </form>

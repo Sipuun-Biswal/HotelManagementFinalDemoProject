@@ -1,6 +1,7 @@
 ﻿using HotelManagementCoreMvcFrontend.Models;
 using HotelManagementCoreMvcFrontend.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Host.Mef;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -24,25 +25,30 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBooking(Guid id, BookingViewModel model)
         {
-           
-            var userIdString = HttpContext.Session.GetString("UserId");
-
-            if (string.IsNullOrEmpty(userIdString))
+            var role = HttpContext.Session.GetString("Role");
+            Guid userId = Guid.Empty;
+            if (role == "User")
             {
-                return RedirectToAction("Login", "Authentication");
+                userId = new Guid(HttpContext.Session.GetString("UserId"));
             }
+            else if (role == "Manager")
+            {
+                userId = model.UserId;
+            }
+            
 
             if (ModelState.IsValid)
             {
-                Guid.TryParse(userIdString, out var userId);
+                   
                 var booking = new Booking
                 {
+                    
                     RoomId = id,
                     UserId = userId,
                     CheckInDate = (DateTime)model.CheckInDate,
                     CheckOutDate =(DateTime) model.CheckOutDate,
                     Status=Status.Pending,
-                    CreatedBy=userId,
+                    CreatedBy= new Guid(HttpContext.Session.GetString("UserId"))
 
 
                 };
@@ -53,10 +59,17 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
-
-                    TempData["BookingSuccesful"] = "Booking Succesfuly Created";
-                    return RedirectToAction(nameof(GetBookingsByUser), new { id = userId });
-                   
+                    if (role == "User")
+                    {
+                        TempData["EditSuccess"] = "Booking Succesfuly Created";
+                        return RedirectToAction(nameof(GetBookingsByUser), new { userId = userId });
+                    }
+                    else if (role == "Manager")
+                    {
+                        TempData["EditSuccess"] = "Booking Succesfuly Created";
+                        return RedirectToAction("BookingsByHotel");
+                    }
+                  
                 }
                 else
                 {
@@ -125,15 +138,18 @@ namespace HotelManagementCoreMvcFrontend.Controllers
                 {
                     if (role == "Admin")
                     {
+                        TempData["EditSuccess"] = "Update Booking Succesfully";
                         return RedirectToAction(nameof(Index));
                     }
                     else if (role == "Manager")
                     {
+                        TempData["EditSuccess"] = "Update Booking Succesfully";
                         return RedirectToAction(nameof(BookingsByHotel));
                     }
                 }
 
-                ModelState.AddModelError("", "Error updating user.");
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                ModelState.AddModelError(string.Empty, errorMessage);
             }
 
             return View(booking);
@@ -164,10 +180,10 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             return RedirectToAction(nameof(Delete), new {id});
         }
         [HttpGet]
-        public async Task<IActionResult> GetBookingsByUser(Guid id)
+        public async Task<IActionResult> GetBookingsByUser(Guid userId)
         {
             SetAuthorizationHeader(_httpClient);
-            var response = await _httpClient.GetAsync($"{_baseUrl}Booking/GetBookingsByUser/{id}");
+            var response = await _httpClient.GetAsync($"{_baseUrl}Booking/GetBookingsByUser/{userId}");
 
             var bookingdata = await response.Content.ReadAsStringAsync();
             var bookings = JsonConvert.DeserializeObject<List<Booking>>(bookingdata);
@@ -180,7 +196,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         }
 
         public async Task<IActionResult> BookingsByHotel()
-        {
+            {
           
 
             var userIdString = HttpContext.Session.GetString("UserId");

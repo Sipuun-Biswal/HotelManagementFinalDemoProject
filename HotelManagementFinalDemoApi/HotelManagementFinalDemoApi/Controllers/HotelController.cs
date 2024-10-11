@@ -138,5 +138,24 @@ namespace HotelManagementFinalDemoApi.Controllers
             var hotelDto = HotelDto.FromEntity(hotel);
             return Ok(hotelDto);
         }
+        [HttpGet("Exist-Room/{id}")]
+        public async Task<IActionResult> CheckExistRooms(Guid id)
+        {
+            var hotel = await _context.Hotels.FindAsync(id)
+        ;
+            if (hotel == null)
+            {
+                return NotFound("Hotel not found.");
+            }
+            var hasActiveBookings = await _context.Rooms
+         .Where(r => r.HotelId == id)
+         .AnyAsync(r => _context.Bookings.Any(b => b.RoomId == r.Id));
+
+            if (hasActiveBookings)
+            {
+                return BadRequest("This hotel has rooms associated with active bookings and cannot be deleted.");
+            }
+            return Ok("true");
+        }
     }
 }

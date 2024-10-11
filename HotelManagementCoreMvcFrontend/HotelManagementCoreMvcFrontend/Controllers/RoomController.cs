@@ -109,24 +109,28 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateRoom(Room room)
         {
-            var userIdString = HttpContext.Session.GetString("UserId");
-
-            if (!Guid.TryParse(userIdString, out var userId))
+            if (ModelState.IsValid)
             {
-                TempData["Error"] = "You must be logged in to create a room.";
-                return RedirectToAction("Login","Authentication");
+                var userIdString = HttpContext.Session.GetString("UserId");
+
+                if (!Guid.TryParse(userIdString, out var userId))
+                {
+                    TempData["Error"] = "You must be logged in to create a room.";
+                    return RedirectToAction("Login", "Authentication");
+                }
+
+                var jsonContent = new StringContent(JsonConvert.SerializeObject(room), Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync($"{_baseUrl}Room/CreateRoomByUserId?userId={userId}", jsonContent);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["Room Success"] = "Room created successfully.";
+                    return RedirectToAction(nameof(GetRoomByHotelAssociatedWithManager), new { userId });
+                }
+
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                ModelState.AddModelError(string.Empty, errorMessage);
             }
-
-            var jsonContent = new StringContent(JsonConvert.SerializeObject(room), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync($"{_baseUrl}Room/CreateRoomByUserId?userId={userId}", jsonContent);
-
-            if (response.IsSuccessStatusCode)
-            {
-                TempData["Room Success"] = "Room created successfully.";
-                return RedirectToAction(nameof(GetRoomByHotelAssociatedWithManager), new {userId});
-            }
-
-            TempData["Error"] = "Same room no already exist.";
             return View(room);
         }
 
@@ -174,7 +178,8 @@ namespace HotelManagementCoreMvcFrontend.Controllers
                     }
                 }
 
-                ModelState.AddModelError("", "Error updating user.");
+                var errorMessage = await response.Content.ReadAsStringAsync();
+                ModelState.AddModelError(string.Empty, errorMessage);
             }
 
             return View(room);

@@ -1,8 +1,22 @@
 ﻿@model IEnumerable<HotelManagementCoreMvcFrontend.Models.Booking>
+
+<h4>Bookings</h4>
 @{
-    var BookingSuccesfulMessage = TempData["BookingSuccesful"] as string;
+    var editBooking = TempData["EditSuccess"] as string;
 }
-<h3>Bookings</h3>
+@if (!string.IsNullOrEmpty(editBooking))
+{
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div class="toast align-items-center text-bg-success border-0" id="loginToast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    @editBooking
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+}
 
 @if (!string.IsNullOrEmpty(ViewBag.Message))
 {
@@ -10,15 +24,15 @@
 }
 else
 {
-    <table class="table">
+    <table class="table" id="bookingTable">
         <thead>
             <tr>
-                <th class="table-heading">Check-In Date</th>
-                <th class="table-heading">Check-Out Date</th>
-                <th class="table-heading">Status</th>
-                <th class="table-heading">Room No</th>
-                <th class="table-heading">Hotel Name</th>
-                <th class="table-heading">Action</th>
+                <th class="table-heading" class="text-center" >Check-In Date</th>
+                <th class="table-heading" class="text-center">Check-Out Date</th>
+                <th class="table-heading" class="text-center">Status</th>
+                <th class="table-heading" class="text-center">Room No</th>
+                <th class="table-heading" class="text-center">Hotel Name</th>
+                <th class="table-heading" class="text-center">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -31,10 +45,26 @@ else
                     <td>@booking.RoomNo</td>
                     <td>@booking.HotelName</td>
                     <td>
-                        @Html.ActionLink("Give Feedback", "SubmitFeedback", "Feedback", new { id = booking.Id }, new { @class = "btn btn-warning btn-sm me-2" })
-                        <form asp-action="Delete" asp-route-id="@booking.Id" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to cancel this booking of room no @booking.RoomNo?');">
-                            <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
-                        </form>
+                        @if (booking.IsFeedbackGiven==true || booking.CheckInDate>DateTime.Now)
+                        {
+                            <button class="btn btn-secondary btn-sm" disabled>Feedback</button>
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Feedback", "SubmitFeedback", "Feedback", new { id = booking.Id }, new { @class = "btn btn-warning btn-sm" })
+                        }
+                        @if (booking.CheckInDate < DateTime.Now)
+                        {
+                            <form asp-action="Delete" asp-route-id="@booking.Id" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to cancel this booking of room no @booking.RoomNo?');">
+                                <button type="submit" class="btn btn-danger btn-sm" disabled>Cancel</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="Delete" asp-route-id="@booking.Id" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to cancel this booking of room no @booking.RoomNo?');">
+                                <button type="submit" class="btn btn-danger btn-sm" >Cancel</button>
+                            </form>
+                        }
                     </td>
                 </tr>
             }
@@ -42,40 +72,43 @@ else
     </table>
 }
 
-@if (!string.IsNullOrEmpty(BookingSuccesfulMessage))
-{
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div class="toast align-items-center text-bg-success border-0" id="loginToast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body">
-                    @BookingSuccesfulMessage
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-    </div>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#bookingTable').DataTable({
+                "pageLength": 5,
+                "lengthMenu": [5, 10, 25, 50],
+                "columnDefs": [
+                    { "orderable": false, "targets": [-1] }
+                ],
+                "dom": '<"top"f>rt<"bottom"lp><"clear">'
+            });
+        });
+    </script>
+    <script>
+        window.onload = function () {
+            var toastEl = document.getElementById('loginToast');
+            if (toastEl) {
+                var toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            }
+        };
+    </script>
 }
 
-<script>
-    window.onload = function () {
-        var toastEl = document.getElementById('loginToast');
-        if (toastEl) {
-            var toast = new bootstrap.Toast(toastEl);
-            toast.show();
-        }
-    };
-</script>
-
 <style>
-    .table-heading {
-        color: black;
+    .table thead th {
+        background-color: #000;
+        color: white;
+        text-align: center;
     }
 
-    .status-green {
-        color: green;
+    .table tbody td {
+        vertical-align: middle;
+        text-align: center;
     }
 
-    .btn-sm {
-        margin-right: 5px; 
+    .table-hover tbody tr:hover {
+        background-color: #f1f1f1;
     }
 </style>

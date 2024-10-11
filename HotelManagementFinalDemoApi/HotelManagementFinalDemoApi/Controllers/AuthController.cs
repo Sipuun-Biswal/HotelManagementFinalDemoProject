@@ -79,7 +79,7 @@ namespace HotelManagementFinalDemoApi.Controllers
             string Password = PasswordHash.HashPassword(loginDto.Password);
             if (user == null || user.PasswordHash != Password || user.IsEmailVerified==false || user.IsActive==false)
             {
-                return Unauthorized("Invalid credentials Or User have not active");
+                return Unauthorized("Invalid Email or Password");
             }
 
             var token = _tokenHelper.GenerateToken(user);

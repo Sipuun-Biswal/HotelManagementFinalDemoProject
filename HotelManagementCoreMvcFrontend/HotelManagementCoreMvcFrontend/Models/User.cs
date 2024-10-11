@@ -12,7 +12,7 @@ namespace HotelManagementCoreMvcFrontend.Models
         public string FirstName { get; set; }
 
 
-        [Required(ErrorMessage ="Last Name field is required")]
+        [Required(ErrorMessage ="Last Name  is required")]
         [StringLength(15)]
         public string LastName { get; set; }
 

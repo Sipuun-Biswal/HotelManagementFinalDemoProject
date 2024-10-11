@@ -10,11 +10,11 @@ namespace HotelManagementCoreMvcFrontend.Models
         [Required]
         public Guid BookingId { get; set; }
 
-
+        public DateTime? CheckoutTime {  get; set; }
         public string? HotelName { get; set; }
         public int? RoomNo { get; set; }
 
-        [Required]
+        [Required(ErrorMessage ="FeedBack is required")]
         public string FeedbackText { get; set; }
 
         [Range(1, 5)]

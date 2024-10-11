@@ -13,7 +13,7 @@ namespace HotelManagementFinalDemoApi.Models.DataBaseDto
         [Required]
         public Guid BookingId { get; set; }
 
-     
+        public DateTime? CheckoutTime { get; set; }
         public string? HotelName { get; set; }
         public int? RoomNo { get; set; }
 
@@ -37,7 +37,8 @@ namespace HotelManagementFinalDemoApi.Models.DataBaseDto
 
                 Id = feedback.Id,
                 BookingId = feedback.BookingId,
-                HotelName=feedback.Booking?.Room?.Hotel?.HotelName,
+               CheckoutTime = feedback.Booking?.CheckOutDate,
+                HotelName =feedback.Booking?.Room?.Hotel?.HotelName,
                 RoomNo=feedback.Booking?.Room?.RoomNo,
                 FeedbackText = feedback.FeedbackText,
                 Rating = feedback.Rating

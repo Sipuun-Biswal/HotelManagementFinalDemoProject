@@ -14,7 +14,7 @@ namespace HotelManagementFinalDemoApi.Controllers
 
         private readonly ApplicationDbContext _context;
         private readonly ILogger<FeedbackController> _logger;
-        public FeedbackController(ApplicationDbContext context, ILogger<FeedbackController> logger)
+        public FeedbackController(ApplicationDbContext context, ILogger<FeedbackController>logger)
         {
             _context = context;
             _logger = logger;

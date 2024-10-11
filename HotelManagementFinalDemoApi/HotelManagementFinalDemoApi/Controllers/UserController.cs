@@ -19,7 +19,7 @@ namespace HotelManagementFinalDemoApi.Controllers
             _context = context;
         }
         [HttpGet("GetAll")]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles ="Admin,Manager")]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _context.Users.Where(u=>u.IsActive && u.Role != 2).ToListAsync();

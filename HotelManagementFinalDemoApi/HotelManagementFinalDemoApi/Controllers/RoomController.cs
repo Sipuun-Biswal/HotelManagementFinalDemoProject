@@ -51,6 +51,14 @@ namespace HotelManagementFinalDemoApi.Controllers
             {
                 return BadRequest("A room with the same number already exists in this hotel.");
             }
+            if (roomDto.RoomNo <= 0) // Assuming `NumberOfRooms` is a property of `RoomDto`
+            {
+                return BadRequest("Room No must be greater than zero .");
+            }
+            if (roomDto.Price <= 0) // Assuming `NumberOfRooms` is a property of `RoomDto`
+            {
+                return BadRequest(" Room price must be greater than zero .");
+            }
             var room = RoomDto.ToEntity(roomDto);
             room.Id = Guid.NewGuid();
             room.IsAvailable=true;
@@ -64,6 +72,14 @@ namespace HotelManagementFinalDemoApi.Controllers
         [HttpPost("CreateRoomByUserId")]
         public async Task<ActionResult<RoomDto>> CreateRoomByUserId([FromBody] RoomDto roomDto, [FromQuery] Guid userId)
         {
+            if (roomDto.RoomNo <= 0) // Assuming `NumberOfRooms` is a property of `RoomDto`
+            {
+                return BadRequest("Room No must be greater than zero .");
+            }
+            if (roomDto.Price <= 0) // Assuming `NumberOfRooms` is a property of `RoomDto`
+            {
+                return BadRequest(" Room price must be greater than zero .");
+            }
             // Check if the hotel associated with the room has the provided user as its owner
             var hotel = await _context.Hotels.FirstOrDefaultAsync(h => h.Id == roomDto.HotelId && h.UserId == userId);
 
@@ -127,18 +143,30 @@ namespace HotelManagementFinalDemoApi.Controllers
         {
             return _context.Rooms.Any(e => e.Id == id);
         }
+       
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRoom(Guid id, RoomDto roomDto)
         {
             if (id != roomDto.Id)
             {
-                return BadRequest();
+                return BadRequest("Room ID mismatch.");
             }
 
             var existingRoom = await _context.Rooms.FindAsync(id);
             if (existingRoom == null)
             {
-                return NotFound();
+                return NotFound("Room not found.");
+            }
+
+            // Check if there is another room with the same RoomNo within the same hotel, excluding the current room
+            var roomWithSameNumberInHotel = await _context.Rooms
+                .AnyAsync(r => r.RoomNo == roomDto.RoomNo
+                            && r.HotelId == roomDto.HotelId  // Check within the same hotel
+                            && r.Id != id);  // Exclude the current room being updated
+
+            if (roomWithSameNumberInHotel)
+            {
+                return Conflict("Room with the same room number already exists in this hotel.");
             }
 
             // Update the properties of the existing room with the values from the DTO
@@ -146,27 +174,15 @@ namespace HotelManagementFinalDemoApi.Controllers
             existingRoom.Price = roomDto.Price;
             existingRoom.IsAvailable = roomDto.IsAvailable;
 
-            // If the HotelId needs to be updated (optional based on your requirements)
+            // Update the HotelId if needed (this can be skipped if HotelId should remain unchanged)
             existingRoom.HotelId = roomDto.HotelId;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RoomExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
+
 
         [HttpGet("GetRoomsByHotel/{hotelId}")]
         public async Task<ActionResult<IEnumerable<RoomDto>>> GetRoomsByHotel(Guid hotelId)

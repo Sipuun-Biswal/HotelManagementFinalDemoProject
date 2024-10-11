@@ -1,13 +1,12 @@
 ﻿@model HotelManagementCoreMvcFrontend.Models.Booking
+@inject IHttpContextAccessor HttpContextAccessor
 
 @{
     ViewData["Title"] = "Edit Booking";
+    var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
 }
-
-<h1 class="text-center">Edit Booking</h1>
-
+<h3>Edit Booking</h3>
 <hr />
-
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6">
@@ -32,15 +31,26 @@
                     <span asp-validation-for="CheckOutDate" class="text-danger"></span>
                 </div>
 
-                <div class="form-group mb-3">
-                    <label asp-for="Status" class="form-label">Status</label>
-                    <input asp-for="Status" class="form-control" />
+                <div class="mb-3">
+                    <label asp-for="Status" class="form-label"> Status<span class="text-danger">*</span></label>
+                    <select asp-for="Status" class="form-select">
+                        <option value="">-- Select Status --</option>
+                        <option value="Confirm">Confirm</option>
+                        <option value="Pending">Pending</option>
+                    </select>
                     <span asp-validation-for="Status" class="text-danger"></span>
                 </div>
 
                 <div class="text-center">
                     <input type="submit" value="Save Changes" class="btn btn-primary me-2" />
-                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                    @if (role == "Manager")
+                    {
+                        <a asp-action="BookingsByHotel" class="btn btn-secondary">Back to List</a>
+                    }
+                    @if (role == "Admin")
+                    {
+                        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                    }
                 </div>
             </form>
         </div>

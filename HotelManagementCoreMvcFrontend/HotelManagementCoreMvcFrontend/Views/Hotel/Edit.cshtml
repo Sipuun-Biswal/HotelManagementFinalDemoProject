@@ -51,8 +51,27 @@
             <div class="form-group mb-3">
                 <input asp-for="UserId" hidden />
             </div>
-            <div class="form-group mb-3">
+            <div class="form-group mb-4">
                 <label class="form-label">Hotel Image</label>
+
+                <!-- Show current profile image if it exists -->
+                <div id="profileImageContainer" class="mb-3 d-flex align-items-center">
+                    <input asp-for="HotelImage" class="form-control"  hidden />
+                    @if (!string.IsNullOrEmpty(Model.HotelImage))
+                    {
+                        <img id="profileImage" src="@Model.HotelImage" class="img-thumbnail rounded-circle" style="width: 150px; height: 150px; object-fit: cover;" alt="Hotel Image" />
+                        <button type="button" class="btn btn-danger btn-sm ms-3" id="deleteProfileImage">Remove</button>
+                    }
+                    else
+                    {
+                        <img id="profileImage" src="~/images/e837f2d7-7191-4747-8db7-87407cb43e81_Hotel.png" class="img-thumbnail rounded-circle" style="width: 150px; height: 150px; object-fit: cover;" alt="Default Profile Image" />
+                    }
+                </div>
+
+                <!-- Hidden field to track deletion of profile image -->
+                <input type="hidden" id="deleteImageFlag" name="deleteImageFlag" value="false" />
+
+                <!-- Input for uploading a new profile image -->
                 <input name="image" class="form-control" type="file" />
             </div>
             <div class="text-center">
@@ -119,6 +138,18 @@
                     });
                 }
             });
+        });
+    </script>
+    <script>
+        // Set delete flag when delete button is clicked
+        document.getElementById('deleteProfileImage')?.addEventListener('click', function () {
+            if (confirm('Are you sure you want to delete the Hotel image?')) {
+                document.getElementById('deleteImageFlag').value = 'true';
+                // Replace the current image with the default image
+                document.getElementById('profileImage').src = '~/images/19639017-0b98-4490-9a27-bd5268cb977b_user-profile-icon-free-vector.jpg';
+                // Hide the delete button since there's no image to delete anymore
+                this.style.display = 'none';
+            }
         });
     </script>
 

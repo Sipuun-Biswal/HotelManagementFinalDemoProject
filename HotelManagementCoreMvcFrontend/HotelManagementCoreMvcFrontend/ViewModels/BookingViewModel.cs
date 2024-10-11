@@ -12,7 +12,7 @@ namespace HotelManagementCoreMvcFrontend.ViewModels
         [Required]
         public Guid RoomId { get; set; }
 
-        [Required (ErrorMessage ="Check-In_date is required")]
+        [Required (ErrorMessage ="Check-In date is required")]
         public DateTime? CheckInDate { get; set; }
         [Required(ErrorMessage ="Check-Out date is required")]
          public DateTime? CheckOutDate { get; set; }

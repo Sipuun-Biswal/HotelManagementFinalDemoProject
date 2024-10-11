@@ -84,9 +84,10 @@ if (ModelState.IsValid)
 
     if (response.IsSuccessStatusCode)
     {
-        TempData["Registration"] = "Registarion Succesful Please Login";
+       
         TempData["Email"] = model.Email;
         return RedirectToAction("VerifyOtp");
+
     }
     else
     {
@@ -119,43 +120,30 @@ if (ModelState.IsValid)
     var responseData = await response.Content.ReadAsStringAsync();
     var loginResponse = JsonConvert.DeserializeObject<LoginResponse>(responseData);
     var token = loginResponse?.Token;
-    if (!string.IsNullOrEmpty(token))
-    {
-    HttpContext.Session.SetString("Token", token);
-    var tokenHandler = new JwtSecurityTokenHandler();
-    var jwtToken = tokenHandler.ReadJwtToken(token); 
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                HttpContext.Session.SetString("Token", token);
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var jwtToken = tokenHandler.ReadJwtToken(token);
 
-                        
-    var roleClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role)?.Value;
-    var userId = jwtToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
-    var name = jwtToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name)?.Value;
-    var ProfileImage = jwtToken.Claims.FirstOrDefault(claim => claim.Type=="Images")?.Value;
-    if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(roleClaim) || !string.IsNullOrEmpty(ProfileImage))
-    {
-        HttpContext.Session.SetString("UserId", userId);
-        HttpContext.Session.SetString("Name", name);
-        HttpContext.Session.SetString("Role", roleClaim);
-        HttpContext.Session.SetString("Image", ProfileImage);
-    }
-    TempData["LoginSuccess"] = "Login successful! Welcome to your account.";
-    return RedirectToAction("Dashboard", "Home");                    }
-                    
-    }
-    else
-    {
-    if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-    {
-    ModelState.AddModelError("", "Invalid credentials. Please try again.");
-    }
-    else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-    {
-    ModelState.AddModelError("", "User not registered. Please sign up first.");
-    }
-    else
-    {
-    ModelState.AddModelError("", "An unexpected error occurred. Please try again later.");
-    }
-    }
+
+                var roleClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Role)?.Value;
+                var userId = jwtToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
+                var name = jwtToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Name)?.Value;
+                var ProfileImage = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "Images")?.Value;
+                if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(roleClaim) || !string.IsNullOrEmpty(ProfileImage))
+                {
+                    HttpContext.Session.SetString("UserId", userId);
+                    HttpContext.Session.SetString("Name", name);
+                    HttpContext.Session.SetString("Role", roleClaim);
+                    HttpContext.Session.SetString("Image", ProfileImage);
+                }
+                TempData["LoginSuccess"] = "Login successful! Welcome to your account.";
+                return RedirectToAction("Dashboard", "Home");
+            }               
+}
+        var errorMessage = await response.Content.ReadAsStringAsync();
+        ModelState.AddModelError(string.Empty, errorMessage);
     }
     return View(model);
     }
@@ -164,8 +152,7 @@ if (ModelState.IsValid)
         [HttpGet]
         public IActionResult VerifyOtp()
         {
-            var email = TempData["Email"]?.ToString();
-            ViewBag.Email = email;
+            TempData.Keep("Email"); 
             return View();
         }
 // POST: Verify OTP using API
@@ -175,7 +162,7 @@ public async Task<IActionResult> VerifyOtp(OtpViewModel model)
     if (ModelState.IsValid)
     {
                 var role = HttpContext.Session.GetString("Role");
-                var jsonData = JsonConvert.SerializeObject(new { model.Email, Code = model.Code });
+                var jsonData = JsonConvert.SerializeObject(new { model.Email, Code = Convert.ToInt32 (model.Code) });
         var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
         var response = await _httpClient.PostAsync($"{_baseUrl}Auth/OtpVerification",content);
@@ -193,14 +180,16 @@ public async Task<IActionResult> VerifyOtp(OtpViewModel model)
                    }
              else  
             {
+                TempData["Registration"] = "Registarion Succesful Please Login";
                 return RedirectToAction("Login");
             }
         }
-
-        ModelState.AddModelError("", "OTP verification failed. Invalid OTP or email expired.");
-    }
-
-    return View(model);
+                TempData.Keep("Email");
+                ModelState.AddModelError("", "OTP verification failed. Invalid OTP or OTP expired.");
+                return View(model);
+            }
+            TempData.Keep("Email");
+            return View(model);
 }
 
 // POST: Log out
@@ -259,8 +248,10 @@ public async Task<IActionResult> ChangePassword(ChangePaswordViewModel model)
         var errorMessage = await response.Content.ReadAsStringAsync();
         ModelState.AddModelError(string.Empty, errorMessage);
     }
-            
-    return View(model);
+            ViewData["CurrentPassword"] = model.CurrentPassword;
+            ViewData["ConfirmPassword"] = model.ConfirmNewPassword;
+            ViewData["NewPassword"] = model.NewPassword;
+            return View(model);
 }
 [AcceptVerbs("Get", "Post")]
 public async Task<IActionResult> IsEmailAvailable(string email)

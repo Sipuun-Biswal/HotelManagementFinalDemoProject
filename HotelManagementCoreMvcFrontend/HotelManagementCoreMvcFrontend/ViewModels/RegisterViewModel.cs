@@ -2,6 +2,7 @@
 using HotelManagementCoreMvcFrontend.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using HotelManagementCoreMvcFrontend.Helper;
 
 namespace HotelManagementCoreMvcFrontend.ViewModels
 {
@@ -31,6 +32,7 @@ namespace HotelManagementCoreMvcFrontend.ViewModels
         
         [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string ConfirmPassword { get; set; }
+        [AllowedFileExtensions(new[] { ".jpg", ".jpeg", ".png", ".gif" }, ErrorMessage = "Please upload a valid image file (jpg, jpeg, png, gif).")]
         public IFormFile? ProfileImage { get; set; }
         [Required(ErrorMessage ="Role is required")]
         public Role Role { get; set; }

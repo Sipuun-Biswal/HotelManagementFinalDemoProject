@@ -108,7 +108,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             return NotFound();
         }
         [HttpPost]
-        public async Task<IActionResult> Edit(IFormFile? image, Hotel hotel)
+        public async Task<IActionResult> Edit(IFormFile? image, Hotel hotel,string deleteImageFlag)
         {
             if (ModelState.IsValid)
             {
@@ -132,11 +132,10 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
                     hotel.HotelImage = "/images/" + uniqueFileName;
                 }
-                else
+                else if (deleteImageFlag == "true")
                 {
-                    hotel.HotelImage = existingHotel?.HotelImage;
+                    hotel.HotelImage = null;
                 }
-
                 // Set UpdatedBy to the current user's ID (replace with your method of fetching the logged-in user)
                 // Assuming Identity is used
                 SetAuthorizationHeader(_httpClient);
@@ -157,7 +156,6 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             return View(hotel);
         }
 
-        [HttpPost]
         public async Task<IActionResult> Delete(Guid id)
         {
             SetAuthorizationHeader(_httpClient);
@@ -168,6 +166,25 @@ namespace HotelManagementCoreMvcFrontend.Controllers
             }
             ModelState.AddModelError("", "Error deleting user.");
             return RedirectToAction(nameof(Delete), new {id});
+        }
+        //check hotel is associated with rooms
+        public async Task<IActionResult> DeleteConformation(Guid Id)
+        {
+            var userId = HttpContext.Session.GetString("UserId");
+            var role = HttpContext.Session.GetString("Role");
+            var response = await _httpClient.GetAsync($"{_baseUrl}Hotel/Exist-Room/{Id}");
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Delete", new { id = Id });
+            }
+            var message = await response.Content.ReadAsStringAsync();
+            TempData["Warning"] = message;
+            if (role == "Admin")
+            {
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("GetRoomByHotelAssociatedWithManager", new { userId });
+
         }
         //Show All Hotel For Booking
         [HttpGet]

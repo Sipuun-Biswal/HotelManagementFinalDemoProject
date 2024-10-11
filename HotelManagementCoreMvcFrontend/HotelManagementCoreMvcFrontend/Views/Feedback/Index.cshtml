@@ -6,17 +6,17 @@
     var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
 }
 
-<h3 class="text-center">Feedbacks</h3>
-
+<h3>Feedbacks</h3>
     <div class="table-responsive">
         <table id="feedbackTable" class="table table-striped table-hover table-bordered">
         <thead class="table-light">
             <tr>
-                    <th>Hotel Name</th>
-                    <th>Room No</th>
-                    <th>Feedback</th>
-                    <th>Rating</th>
-                    <th>Actions</th>
+                <th class="text-center">Hotel Name</th>
+                <th class="text-center">Room No</th>
+                <th class="text-center">Feedback</th>
+                <th class="text-center">Rating</th>
+                <th class="text-center">Check-Out-Date</th>
+                <th class="text-center">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -27,6 +27,7 @@
                     <td>@Html.DisplayFor(modelItem => item.RoomNo)</td>
                     <td>@Html.DisplayFor(modelItem => item.FeedbackText)</td>
                     <td>@Html.DisplayFor(modelItem => item.Rating)</td>
+                    <td>@Html.DisplayFor(modelItem=>item.CheckoutTime)</td>
                     <td>
                         @if (role == "Admin")
                         {
@@ -59,3 +60,25 @@
         });
     </script>
 }
+<style>
+    .table thead th {
+        background-color: #000;
+        color: white;
+        text-align: center;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .img-thumbnail {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+</style>

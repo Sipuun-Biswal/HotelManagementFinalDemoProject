@@ -2,30 +2,45 @@
 
 @{
     ViewData["Title"] = "Booking List";
+    var editBooking = TempData["EditSuccess"] as string;
+}
+@if (!string.IsNullOrEmpty(editBooking))
+{
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div class="toast align-items-center text-bg-success border-0" id="loginToast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    @editBooking
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
 }
 
-<h3 class="mb-4">@ViewData["Title"]</h3>
-
+<h3 class="mb-4">Bookings</h3>
 <div class="table-responsive">
     <table id="bookingTable" class="table table-striped table-hover table-bordered">
     <thead class="thead-dark">
         <tr>
-            <th>
+                <th class="text-center">
                Check-In-Date
             </th>
-            <th>
+                <th class="text-center">
                Check-Out-Date
             </th>
-            <th>
+                <th class="text-center">
                Status
             </th>
-            <th>
+                <th class="text-center">
                Hotel Name
             </th>
-            <th>
+                <th class="text-center">
+                Guest Name
+            </th>
+                <th class="text-center">
                Room No
             </th>
-            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -46,14 +61,11 @@
                     <td>
                     @Html.DisplayFor(modelItem => item.HotelName)
                 </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FullName)
+                    </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.RoomNo)
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { @class = "btn btn-warning btn-sm" }) |
-                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this booking?');">
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
                 </td>
             </tr>
         }
@@ -74,3 +86,34 @@
         });
     </script>
 }
+<script>
+    window.onload = function () {
+        var toastEl = document.getElementById('loginToast');
+        if (toastEl) {
+            var toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
+    };
+</script>
+<style>
+    .table thead th {
+        background-color: #000;
+        color: white;
+        text-align: center;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .img-thumbnail {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+</style>

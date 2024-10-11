@@ -20,14 +20,22 @@ namespace HotelManagementCoreMvcFrontend.Controllers
         {
             _httpClient = httpClient;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int JsonFlag)
         {
             SetAuthorizationHeader(_httpClient);
             var response = await _httpClient.GetAsync($"{_baseUrl}User/GetAll");
             if (response.IsSuccessStatusCode)
             {
                 var users = await response.Content.ReadFromJsonAsync<List<User>>();
-                return View(users);
+                if (JsonFlag == 1)
+                {
+                    var FilteredUsers=users.Where(u=>u.Role==Role.User).ToList();
+                    return Json(FilteredUsers);
+                }
+                else
+                {   
+                    return View(users);
+                }
             }
             return View(new List<User>());
         }
@@ -97,7 +105,7 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(IFormFile? image, User user)
+        public async Task<IActionResult> Edit(IFormFile? image, User user, string deleteImageFlag)
         {
             if (ModelState.IsValid)
             {
@@ -121,20 +129,25 @@ namespace HotelManagementCoreMvcFrontend.Controllers
 
                     user.ProfileImage = "/images/" + uniqueFileName;
                 }
-                else
+             else if(deleteImageFlag == "true")
                 {
-                    user.ProfileImage = existingUser?.ProfileImage;
+                    user.ProfileImage = null;
                 }
-
-                // Set UpdatedBy to the current user's ID (replace with your method of fetching the logged-in user)
-                // Assuming Identity is used
-
                 var jsonData = JsonSerializer.Serialize(user);
                 var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
                 SetAuthorizationHeader(_httpClient);
                 var response = await _httpClient.PutAsync($"{_baseUrl}User/{user.Id}", content);
                 if (response.IsSuccessStatusCode)
                 {
+                    HttpContext.Session.SetString("Name", user.FirstName + " " + user.LastName);
+                    if (!string.IsNullOrEmpty(user.ProfileImage))
+                    {
+                        HttpContext.Session.SetString("Image", user.ProfileImage);
+                    }
+                    else
+                    {
+                        HttpContext.Session.Remove("Image"); // Remove image from session if deleted
+                    }
                     TempData["SuccesUpdate"] = "Update Succesfull";
                     return RedirectToAction("Dashboard", "Home");
                     

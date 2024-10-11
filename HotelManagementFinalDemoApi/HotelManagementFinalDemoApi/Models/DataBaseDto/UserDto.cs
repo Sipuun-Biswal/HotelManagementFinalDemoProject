@@ -1,4 +1,4 @@
-﻿using HotelManagementFinalDemoApi.Models.DataModels;
+﻿ using HotelManagementFinalDemoApi.Models.DataModels;
 using System.ComponentModel.DataAnnotations;
 
 namespace HotelManagementFinalDemoApi.Models.DataBaseDto

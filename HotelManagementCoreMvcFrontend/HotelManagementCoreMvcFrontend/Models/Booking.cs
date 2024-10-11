@@ -20,6 +20,8 @@ namespace HotelManagementCoreMvcFrontend.Models
 
         [Required]
         public Status Status { get; set; }
+        public bool? IsFeedbackGiven { get; set; } 
+        public string? FullName { get; set; }
         public int? RoomNo { get; set; }
 
         public string? HotelName { get; set; }
@@ -33,7 +35,6 @@ namespace HotelManagementCoreMvcFrontend.Models
         public Guid? UpdatedBy { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
-        
     }
     public enum Status {
         Confirm = 1,

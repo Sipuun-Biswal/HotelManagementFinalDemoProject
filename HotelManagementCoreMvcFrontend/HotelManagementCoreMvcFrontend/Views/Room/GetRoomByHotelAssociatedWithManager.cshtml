@@ -41,10 +41,10 @@
     <table id="roomTable" class="table table-striped table-hover table-bordered">
         <thead class="thead-dark">
             <tr>
-                <th>Hotel Name</th>
-                <th>Room No</th>
-                <th>Price</th>
-                <th>Status for Today</th>
+                <th class="text-center">Hotel Name</th>
+                <th class="text-center">Room No</th>
+                <th class="text-center">Price</th>
+                <th class="text-center">Today Status</th>
                 <th class="text-center">Actions</th>
             </tr>
         </thead>
@@ -88,8 +88,10 @@
             $('#roomTable').DataTable({
                 "pageLength": 5,
                 "lengthMenu": [5, 10, 25, 50],
+                "order": [[3, "asc"]],
+
                 "columnDefs": [
-                    { "orderable": false, "targets": [-2, -1] }
+                    { "orderable": false, "targets": [-1] }
                 ],
                 "dom": '<"top"f>rt<"bottom"lp><"clear">'
             });
@@ -105,3 +107,26 @@
         }
     };
 </script>
+<style>
+    .table thead th {
+        background-color: #000;
+        color: white;
+        text-align: center;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .img-thumbnail {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f1f1f1;
+        
+    }
+</style>

@@ -1,7 +1,10 @@
 ﻿@model HotelManagementCoreMvcFrontend.Models.Room
+@inject IHttpContextAccessor HttpContextAccessor
 
 @{
     ViewData["Title"] = "Edit Room";
+    var role = HttpContextAccessor.HttpContext.Session.GetString("Role");
+    var userId = HttpContextAccessor.HttpContext.Session.GetString("UserId");
 }
 <h4>Edit Room Details</h4>
 <hr />
@@ -27,8 +30,21 @@
             </div>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Save</button>
-                <a asp-action="Index" class="btn btn-secondary ms-2">Back to List</a>
+                @if (role == "Admin")
+                {
+                    <a asp-action="Index" class="btn btn-secondary ms-2">Back to List</a>
+                }
+                @if (role == "Manager")
+                {
+                    @Html.ActionLink("Back to List", "GetRoomByHotelAssociatedWithManager", "Room", new { userId = userId }, new { @class = "btn btn-success btn-sm" })
+                    
+                }
             </div>
         </form>
     </div>
 </div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
